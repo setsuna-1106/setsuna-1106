@@ -1,41 +1,303 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <title>告文的个人主页</title>
-  <style>
-    body {
-      max-width: 760px;
-      margin: 60px auto;
-      padding: 0 20px;
-      font-family: system-ui, sans-serif;
-      line-height: 1.8;
-    }
-    h1 {
-      font-size: 2.2rem;
-    }
-    a {
-      color: #2563eb;
-    }
-  </style>
-</head>
-<body>
-  <h1>你好，我是告文</h1>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="告文 / zhanghaomin / setsuna-1106 - Nanjing University physics student portfolio for computational physics notes, C simulations, and Python visualizations.">
+    <title>告文 | setsuna-1106</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
 
-  <p>
-    我是南京大学物理系学生，关注物理、计算、数学与科学写作。
-  </p>
+    <header class="site-header" aria-label="Primary navigation">
+      <a class="brand" href="#top" aria-label="setsuna-1106 home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>setsuna-1106</span>
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#work">Work</a>
+        <a href="#method">Method</a>
+        <a href="#notes">Notes</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
 
-  <h2>关于我</h2>
-  <p>
-    对计算物理方向感兴趣，现在正在努力学习中。
-    如果想和我交流，联系我zhang.haomin1106@gmail.com
-  </p>
+    <main id="main">
+      <section class="hero section-grid" id="top">
+        <div class="hero-index" aria-hidden="true">01</div>
+        <div class="hero-copy">
+          <h1>告文</h1>
+          <p class="hero-statement">
+            南京大学物理系学生，GitHub @setsuna-1106。关注物理、计算、数学与科学写作，用 C 写数值核心，用 Python 做可视化。
+          </p>
+          <div class="hero-actions" aria-label="Primary links">
+            <a class="button primary" href="https://github.com/setsuna-1106">GitHub</a>
+            <a class="button secondary" href="#work">查看项目</a>
+          </div>
+        </div>
+        <div class="hero-panel" aria-label="Live oscillator sketch">
+          <div class="panel-head">
+            <span>SHO / damping</span>
+            <span id="sim-status">running</span>
+          </div>
+          <canvas id="oscillator" width="720" height="420"></canvas>
+          <div class="sim-controls" aria-label="Simulation controls">
+            <button class="icon-button" id="play-sim" type="button" aria-label="Pause simulation" title="Pause simulation">
+              <span aria-hidden="true">II</span>
+            </button>
+            <label>
+              <span>gamma</span>
+              <input id="damping" type="range" min="0" max="0.14" step="0.01" value="0.04">
+            </label>
+            <label>
+              <span>omega</span>
+              <input id="frequency" type="range" min="0.8" max="2.2" step="0.1" value="1.4">
+            </label>
+          </div>
+        </div>
+        <dl class="hero-meta">
+          <div>
+            <dt>GitHub</dt>
+            <dd>@setsuna-1106</dd>
+          </div>
+          <div>
+            <dt>Location</dt>
+            <dd>Nanjing University</dd>
+          </div>
+          <div>
+            <dt>Public Repos</dt>
+            <dd>5 repositories</dd>
+          </div>
+        </dl>
+      </section>
 
-  <h2>文章</h2>
-  <ul>
-    <li><a href="#">热学笔记</a></li>
-    <li><a href="#">C 语言数值计算小项目</a></li>
-  </ul>
-</body>
-</html> 
+      <section class="section-grid intro" aria-labelledby="intro-title">
+        <div class="section-number" aria-hidden="true">02</div>
+        <div class="section-label">Profile</div>
+        <div class="intro-copy">
+          <h2 id="intro-title">Physics student. Computational notes. Small tools.</h2>
+          <p>
+            这个站点把 GitHub 账号里的计算物理仓库、工具项目和学习记录集中展示。核心内容来自 c4phy：误差分析、数值微积分、蒙特卡洛、ODE、双摆、随机行走、自发衰变和球内光线反射。
+          </p>
+        </div>
+        <aside class="profile-card" aria-label="GitHub profile">
+          <img src="assets/github-avatar.jpg" alt="GitHub avatar for setsuna-1106">
+          <div>
+            <span>GitHub Profile</span>
+            <strong>setsuna-1106</strong>
+            <a href="https://github.com/setsuna-1106">github.com/setsuna-1106</a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="work section-grid" id="work" aria-labelledby="work-title">
+        <div class="section-number" aria-hidden="true">03</div>
+        <div class="section-label">Selected Work</div>
+        <div class="section-heading">
+          <h2 id="work-title">GitHub index</h2>
+          <p>公开仓库中的学习项目、工具和配置入口。</p>
+        </div>
+        <div class="project-list">
+          <article class="project-item">
+            <div class="project-code">C01</div>
+            <h3>c4phy</h3>
+            <p>计算物理学习记录：C 数值模拟、Python 可视化、误差分析、Monte Carlo、ODE 和小型物理项目。</p>
+            <ul>
+              <li>C</li>
+              <li>Physics</li>
+              <li>2 stars</li>
+            </ul>
+            <a class="project-link" href="https://github.com/setsuna-1106/c4phy">Open repository</a>
+          </article>
+          <article class="project-item">
+            <div class="project-code">C02</div>
+            <h3>Textbook pipeline</h3>
+            <p>把中文 STEM 教材 PDF 转为 Cambridge/Oxford 风格英文 LaTeX PDF 的五阶段处理流程。</p>
+            <ul>
+              <li>TeX</li>
+              <li>Translation</li>
+              <li>STEM</li>
+            </ul>
+            <a class="project-link" href="https://github.com/setsuna-1106/chinese-to-english-textbook">Open repository</a>
+          </article>
+          <article class="project-item">
+            <div class="project-code">C03</div>
+            <h3>Obsidian PDF progress</h3>
+            <p>Obsidian 插件，用状态栏和文件浏览器标记 PDF 阅读进度，面向长文档学习流。</p>
+            <ul>
+              <li>TypeScript</li>
+              <li>Obsidian</li>
+              <li>1 star</li>
+            </ul>
+            <a class="project-link" href="https://github.com/setsuna-1106/obsidian-pdf-reading-progress">Open repository</a>
+          </article>
+          <article class="project-item">
+            <div class="project-code">C04</div>
+            <h3>Profile page</h3>
+            <p>GitHub profile / Pages 仓库，用来发布个人入口页和展示学习项目。</p>
+            <ul>
+              <li>HTML</li>
+              <li>Pages</li>
+              <li>Public</li>
+            </ul>
+            <a class="project-link" href="https://github.com/setsuna-1106/setsuna-1106">Open repository</a>
+          </article>
+          <article class="project-item">
+            <div class="project-code">C05</div>
+            <h3>nvim-config</h3>
+            <p>Neovim 配置仓库，用来保存和迁移个人编辑环境。</p>
+            <ul>
+              <li>Editor</li>
+              <li>Config</li>
+              <li>Public</li>
+            </ul>
+            <a class="project-link" href="https://github.com/setsuna-1106/nvim-config">Open repository</a>
+          </article>
+          <article class="project-item">
+            <div class="project-code">C06</div>
+            <h3>Computational physics modules</h3>
+            <p>c4phy 中的双摆、随机行走、振动、自发衰变、球内反射等模块，作为主页的核心学术展示。</p>
+            <ul>
+              <li>Simulation</li>
+              <li>Visualization</li>
+              <li>Notes</li>
+            </ul>
+            <a class="project-link" href="https://github.com/setsuna-1106/c4phy/tree/main/src">View source tree</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="method section-grid" id="method" aria-labelledby="method-title">
+        <div class="section-number" aria-hidden="true">04</div>
+        <div class="section-label">Workflow</div>
+        <div class="method-copy">
+          <h2 id="method-title">C computes. Python explains.</h2>
+          <p>
+            仓库采用清晰的计算工作流：C 负责性能关键的数值循环，把数据写成 CSV 或二进制；Python 负责探索、检查、画图与论文式输出。部分实时项目直接使用 Raylib 在 C 端完成渲染。
+          </p>
+        </div>
+        <div class="flow" aria-label="Computational workflow">
+          <div class="flow-step">
+            <span>01</span>
+            <strong>Model</strong>
+            <p>把物理问题写成方程、边界条件和初始条件。</p>
+          </div>
+          <div class="flow-step">
+            <span>02</span>
+            <strong>Compute</strong>
+            <p>用 C 编写数值核心，控制步长、误差和输出格式。</p>
+          </div>
+          <div class="flow-step">
+            <span>03</span>
+            <strong>Visualize</strong>
+            <p>用 Python 或 Raylib 检查轨迹、分布、相图和误差。</p>
+          </div>
+          <div class="flow-step">
+            <span>04</span>
+            <strong>Document</strong>
+            <p>把推导、代码入口和观察结果放回笔记。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="notes section-grid" id="notes" aria-labelledby="notes-title">
+        <div class="section-number" aria-hidden="true">05</div>
+        <div class="section-label">Notes</div>
+        <div class="section-heading">
+          <h2 id="notes-title">Visual notebook</h2>
+          <p>从仓库笔记中选取的图像片段，保持项目本身的真实痕迹。</p>
+        </div>
+        <div class="note-gallery">
+          <figure class="note-card large">
+            <img src="assets/random-walk.png" alt="Random walk diagrams and 3D walk sketch">
+            <figcaption>
+              <span>Monte Carlo</span>
+              Random walk and diffusion
+            </figcaption>
+          </figure>
+          <figure class="note-card">
+            <img src="assets/central-difference.png" alt="Forward and central numerical difference diagrams">
+            <figcaption>
+              <span>Numerical calculus</span>
+              Central difference
+            </figcaption>
+          </figure>
+          <figure class="note-card">
+            <img src="assets/euler-rule.png" alt="Euler method integration diagram">
+            <figcaption>
+              <span>ODE</span>
+              Euler step error
+            </figcaption>
+          </figure>
+          <figure class="note-card formula">
+            <img src="assets/linear-congruent.png" alt="Linear congruent random number formula">
+            <figcaption>
+              <span>Random number</span>
+              Linear congruent method
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="progress section-grid" aria-labelledby="progress-title">
+        <div class="section-number" aria-hidden="true">06</div>
+        <div class="section-label">Progress</div>
+        <div class="section-heading">
+          <h2 id="progress-title">Learning matrix</h2>
+          <p>笔记、C 代码和可视化之间的完成状态。</p>
+        </div>
+        <div class="matrix" role="table" aria-label="Learning progress matrix">
+          <div class="matrix-row matrix-head" role="row">
+            <span role="columnheader">Topic</span>
+            <span role="columnheader">Notes</span>
+            <span role="columnheader">C</span>
+            <span role="columnheader">Viz</span>
+          </div>
+          <div class="matrix-row" role="row">
+            <span role="cell">Error analysis</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">open</span>
+          </div>
+          <div class="matrix-row" role="row">
+            <span role="cell">Differentiation</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">yes</span>
+          </div>
+          <div class="matrix-row" role="row">
+            <span role="cell">Monte Carlo</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">open</span>
+          </div>
+          <div class="matrix-row" role="row">
+            <span role="cell">Double pendulum</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">yes</span>
+          </div>
+          <div class="matrix-row" role="row">
+            <span role="cell">Decay model</span><span role="cell">draft</span><span role="cell">yes</span><span role="cell">yes</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact section-grid" id="contact" aria-labelledby="contact-title">
+        <div class="section-number" aria-hidden="true">07</div>
+        <div class="section-label">Contact</div>
+        <div class="contact-copy">
+          <h2 id="contact-title">Find the work on GitHub.</h2>
+          <p>
+            这个页面会同步到独立 GitHub Pages 仓库，不提交到 c4phy。入口保留为 GitHub profile、Pages 站点和计算物理项目仓库。
+          </p>
+          <div class="contact-actions" aria-label="Contact links">
+            <a class="button primary" href="https://github.com/setsuna-1106">GitHub Profile</a>
+            <a class="button secondary" href="https://setsuna-1106.github.io/setsuna-1106/">GitHub Pages</a>
+          </div>
+        </div>
+        <div class="contact-card" aria-label="Site facts">
+            <p>告文 / zhanghaomin</p>
+            <p>Nanjing University</p>
+            <p>zhang.haomin1106@gmail.com</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>setsuna-1106</span>
+      <span>Built from GitHub profile data and c4phy notes.</span>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
