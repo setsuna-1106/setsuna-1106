@@ -19,6 +19,7 @@
         <a href="#work">Work</a>
         <a href="#method">Method</a>
         <a href="#notes">Notes</a>
+        <a href="#tasks">Tasks</a>
         <a href="#contact">Contact</a>
       </nav>
     </header>
@@ -272,11 +273,59 @@
         </div>
       </section>
 
-      <section class="contact section-grid" id="contact" aria-labelledby="contact-title">
+      <section class="tasks section-grid" id="tasks" aria-labelledby="tasks-title">
         <div class="section-number" aria-hidden="true">07</div>
+        <div class="section-label">Tasks</div>
+        <div class="section-heading">
+          <h2 id="tasks-title">Current task statistics</h2>
+          <p>计算物理学习与个人项目的当前任务状态，由页面脚本自动统计。</p>
+        </div>
+        <div class="task-dashboard" aria-label="Current task statistics">
+          <div class="task-summary" aria-label="Task summary">
+            <article class="task-stat">
+              <span>Total</span>
+              <strong id="task-total">0</strong>
+            </article>
+            <article class="task-stat">
+              <span>Done</span>
+              <strong id="task-done">0</strong>
+            </article>
+            <article class="task-stat">
+              <span>Doing</span>
+              <strong id="task-doing">0</strong>
+            </article>
+            <article class="task-stat">
+              <span>Open</span>
+              <strong id="task-open">0</strong>
+            </article>
+          </div>
+          <div class="task-meter" aria-label="Completion rate">
+            <div class="task-meter-head">
+              <span>Completion</span>
+              <strong id="task-percent">0%</strong>
+            </div>
+            <div class="task-meter-track" aria-hidden="true">
+              <span id="task-meter-bar"></span>
+            </div>
+          </div>
+          <div class="task-filters" aria-label="Task filters">
+            <button class="task-filter is-active" type="button" data-task-filter="all">All</button>
+            <button class="task-filter" type="button" data-task-filter="doing">Doing</button>
+            <button class="task-filter" type="button" data-task-filter="open">Open</button>
+            <button class="task-filter" type="button" data-task-filter="done">Done</button>
+          </div>
+          <div class="task-list" id="task-list" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="contact section-grid" id="contact" aria-labelledby="contact-title">
+        <div class="section-number" aria-hidden="true">08</div>
         <div class="section-label">Contact</div>
         <div class="contact-copy">
           <h2 id="contact-title">Find the work on GitHub.</h2>
+          <p>
+            这个页面会同步到独立 GitHub Pages 仓库，不提交到 c4phy。入口保留为 GitHub profile、Pages 站点和计算物理项目仓库。
+          </p>
           <div class="contact-actions" aria-label="Contact links">
             <a class="button primary" href="https://github.com/setsuna-1106">GitHub Profile</a>
             <a class="button secondary" href="https://setsuna-1106.github.io/setsuna-1106/">GitHub Pages</a>

@@ -4,6 +4,47 @@ const dampingInput = document.querySelector("#damping");
 const frequencyInput = document.querySelector("#frequency");
 const playButton = document.querySelector("#play-sim");
 const statusText = document.querySelector("#sim-status");
+const taskList = document.querySelector("#task-list");
+const taskFilterButtons = document.querySelectorAll("[data-task-filter]");
+
+const tasks = [
+  {
+    title: "整理 c4phy 项目主页",
+    area: "Website",
+    status: "done",
+    detail: "完成瑞士风个人网站、GitHub profile 信息和项目入口。",
+  },
+  {
+    title: "补全任务统计模块",
+    area: "Website",
+    status: "doing",
+    detail: "把学习任务转换成可筛选、可自动统计的前端组件。",
+  },
+  {
+    title: "完善 ODE / nonlinear oscillations 笔记",
+    area: "Notes",
+    status: "doing",
+    detail: "继续整理 Euler、RK2、RK4 与非线性振子的误差观察。",
+  },
+  {
+    title: "给随机行走加入更多可视化",
+    area: "Simulation",
+    status: "open",
+    detail: "补充自回避行走、扩散距离和统计分布图。",
+  },
+  {
+    title: "整理 spontaneous decay 文档",
+    area: "Notes",
+    status: "open",
+    detail: "把离散衰变模拟和指数近似的对照写成项目说明。",
+  },
+  {
+    title: "检查 Pages 部署内容",
+    area: "GitHub",
+    status: "done",
+    detail: "独立 Pages 仓库已经接入个人网站，不提交到 c4phy。",
+  },
+];
 
 let running = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let time = 0;
@@ -196,6 +237,65 @@ function updatePlayState() {
   playButton.querySelector("span").textContent = running ? "II" : ">";
 }
 
+function taskCounts() {
+  return tasks.reduce(
+    (counts, task) => {
+      counts.total += 1;
+      counts[task.status] += 1;
+      return counts;
+    },
+    { total: 0, done: 0, doing: 0, open: 0 }
+  );
+}
+
+function setText(id, value) {
+  const node = document.querySelector(id);
+  if (node) node.textContent = value;
+}
+
+function renderTaskStats() {
+  const counts = taskCounts();
+  const completion = counts.total === 0 ? 0 : Math.round((counts.done / counts.total) * 100);
+  setText("#task-total", counts.total);
+  setText("#task-done", counts.done);
+  setText("#task-doing", counts.doing);
+  setText("#task-open", counts.open);
+  setText("#task-percent", `${completion}%`);
+
+  const meter = document.querySelector("#task-meter-bar");
+  if (meter) meter.style.width = `${completion}%`;
+}
+
+function renderTasks(filter = "all") {
+  if (!taskList) return;
+
+  const visibleTasks = filter === "all" ? tasks : tasks.filter((task) => task.status === filter);
+  taskList.innerHTML = visibleTasks
+    .map(
+      (task) => `
+        <article class="task-row">
+          <div class="task-row-main">
+            <h3>${task.title}</h3>
+            <p>${task.detail}</p>
+          </div>
+          <div class="task-row-status" data-status="${task.status}">${task.status}</div>
+          <div class="task-row-meta">${task.area}</div>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function bindTaskFilters() {
+  taskFilterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      taskFilterButtons.forEach((item) => item.classList.remove("is-active"));
+      button.classList.add("is-active");
+      renderTasks(button.dataset.taskFilter);
+    });
+  });
+}
+
 playButton.addEventListener("click", () => {
   running = !running;
   updatePlayState();
@@ -212,4 +312,7 @@ window.addEventListener("resize", () => {
 
 resizeCanvas();
 updatePlayState();
+renderTaskStats();
+renderTasks();
+bindTaskFilters();
 requestAnimationFrame(frame);
