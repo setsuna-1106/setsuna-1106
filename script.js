@@ -9,24 +9,6 @@ const taskFilterButtons = document.querySelectorAll("[data-task-filter]");
 
 const tasks = [
   {
-    title: "整理 c4phy 项目主页",
-    area: "Website",
-    status: "done",
-    detail: "完成瑞士风个人网站、GitHub profile 信息、项目入口和 advance 动态版链接。",
-  },
-  {
-    title: "补全任务统计模块",
-    area: "Website",
-    status: "done",
-    detail: "把学习任务转换成可筛选、可自动统计的前端组件，并把状态拆成 done / doing / open。",
-  },
-  {
-    title: "同步 GitHub 公开仓库列表",
-    area: "GitHub",
-    status: "done",
-    detail: "根据 GitHub API 更新为 4 个公开仓库，并移除未出现在公开列表中的项目展示。",
-  },
-  {
     title: "完善 ODE / nonlinear oscillations 笔记",
     area: "Notes",
     status: "doing",
@@ -61,12 +43,6 @@ const tasks = [
     area: "Tooling",
     status: "open",
     detail: "补充长文档阅读、教材复习和文件浏览器进度提示的实际用例。",
-  },
-  {
-    title: "检查 Pages 部署内容",
-    area: "GitHub",
-    status: "done",
-    detail: "独立 Pages 仓库已经接入个人网站，根目录主页和 advance 子站可以分别部署。",
   },
 ];
 

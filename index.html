@@ -35,7 +35,7 @@
           <div class="hero-actions" aria-label="Primary links">
             <a class="button primary" href="https://github.com/setsuna-1106">GitHub</a>
             <a class="button secondary" href="#work">查看项目</a>
-            <a class="button secondary" href="advance/">动态版</a>
+            <a class="button secondary" href="advance/">深入展示</a>
           </div>
         </div>
         <div class="hero-panel" aria-label="Live oscillator sketch">
@@ -83,7 +83,7 @@
             这个站点把 GitHub 账号里的 4 个公开仓库集中展示。核心内容来自 c4phy：误差分析、数值微积分、蒙特卡洛、ODE、双摆、随机行走、自发衰变和球内光线反射；旁支项目记录教材翻译流水线、Obsidian 阅读插件和 GitHub Pages 主页。
           </p>
           <p>
-            页面分为两个入口：根目录是稳定的个人主页，适合放在 GitHub Pages 首页；advance 目录是可独立部署的动态版，使用 data.js 渲染项目、矩阵和任务面板，后续可以接入 API 或 CMS。
+            我希望这里像一张安静的工作台：能看到正在学什么、写过什么、哪些笔记已经有代码和图像，少一点包装，多一点真实材料。
           </p>
         </div>
         <aside class="profile-card" aria-label="GitHub profile">
@@ -112,8 +112,8 @@
           </article>
           <article class="focus-card">
             <span>Tools</span>
-            <strong>Obsidian / Pages / Dashboard</strong>
-            <p>围绕真实学习场景维护小工具：PDF 阅读进度、个人主页部署、动态任务面板和公开仓库索引。</p>
+            <strong>Obsidian / Pages / Notes</strong>
+            <p>围绕真实学习场景维护小工具：PDF 阅读进度、项目入口页、长文档笔记和公开仓库索引。</p>
           </article>
         </div>
       </section>
@@ -123,13 +123,13 @@
         <div class="section-label">Selected Work</div>
         <div class="section-heading">
           <h2 id="work-title">GitHub index</h2>
-          <p>根据 GitHub API 同步的公开仓库与 c4phy 模块入口。卡片重点说明每个仓库解决什么问题、当前适合从哪里继续深入。</p>
+          <p>公开仓库与 c4phy 模块入口。卡片重点说明每个仓库解决什么问题、当前适合从哪里继续深入。</p>
         </div>
         <div class="project-list">
           <article class="project-item">
             <div class="project-code">C01</div>
             <h3>Profile / Pages</h3>
-            <p>公开主页仓库 setsuna-1106：用于展示个人入口、GitHub Pages 链接和学习项目索引，当前 GitHub API 显示主语言为 CSS。</p>
+            <p>个人主页与 GitHub Profile 展示入口，集中放置学习方向、项目链接和联系方式。</p>
             <ul>
               <li>CSS</li>
               <li>Pages</li>
@@ -190,7 +190,7 @@
         <div class="method-copy">
           <h2 id="method-title">C computes. Python explains.</h2>
           <p>
-            仓库采用清晰的计算工作流：C 负责性能关键的数值循环，把数据写成 CSV 或二进制；Python 负责探索、检查、画图与论文式输出。网页本身承担第三层工作：把仓库、图像、任务状态和后续计划集中成一个可部署的索引。
+            仓库采用清晰的计算工作流：C 负责性能关键的数值循环，把数据写成 CSV 或二进制；Python 负责探索、检查、画图与论文式输出。展示页只保留必要入口，让读者能顺着项目看到笔记、代码和结果。
           </p>
         </div>
         <div class="flow" aria-label="Computational workflow">
@@ -302,7 +302,7 @@
         <div class="section-label">Tasks</div>
         <div class="section-heading">
           <h2 id="tasks-title">Current task statistics</h2>
-          <p>计算物理学习与个人项目的当前任务状态，由页面脚本自动统计。任务内容对应仓库中已经出现的模块和这个网站后续要补的页面材料。</p>
+          <p>计算物理学习与个人项目的当前任务状态。任务内容对应仓库中已经出现的模块、笔记和工具。</p>
         </div>
         <div class="task-dashboard" aria-label="Current task statistics">
           <div class="task-summary" aria-label="Task summary">
@@ -348,12 +348,12 @@
         <div class="contact-copy">
           <h2 id="contact-title">Find the work on GitHub.</h2>
           <p>
-            这个页面会同步到独立 GitHub Pages 仓库，不提交到 c4phy。主页用于索引公开仓库和学习轨迹；更细的交互版本在 advance 目录中，适合作为下一版个人看板继续迭代。
+            这里是个人展示页，完整代码、笔记和工具项目都可以从 GitHub 继续查看。
           </p>
           <div class="contact-actions" aria-label="Contact links">
             <a class="button primary" href="https://github.com/setsuna-1106">GitHub Profile</a>
             <a class="button secondary" href="https://setsuna-1106.github.io/setsuna-1106/">GitHub Pages</a>
-            <a class="button secondary" href="advance/">Advance Site</a>
+            <a class="button secondary" href="advance/">深入展示</a>
           </div>
         </div>
         <div class="contact-card" aria-label="Site facts">
@@ -366,9 +366,9 @@
 
     <footer class="site-footer">
       <span>setsuna-1106</span>
-      <span>Built from GitHub profile data and c4phy notes.</span>
+      <span>Computational physics notes and project records.</span>
     </footer>
 
-    <script src="script.js?v=2"></script>
+    <script src="script.js?v=3"></script>
   </body>
 </html>

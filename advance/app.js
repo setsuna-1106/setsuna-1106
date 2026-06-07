@@ -1,5 +1,5 @@
 const data = window.siteData;
-const storageKey = "setsuna-advance-tasks-v3";
+const storageKey = "setsuna-advance-tasks-v4";
 
 const state = {
   projectFilter: "all",
@@ -220,21 +220,20 @@ function renderTasks() {
   const tasks = state.taskFilter === "all" ? state.tasks : state.tasks.filter((task) => task.status === state.taskFilter);
   $("#task-list").innerHTML =
     tasks
-      .map((task, index) => {
-        const sourceIndex = state.tasks.indexOf(task);
-        return `
+      .map(
+        (task) => `
           <article class="task-row">
             <div class="task-row-main">
               <h3>${escapeHtml(task.title)}</h3>
               <p>${escapeHtml(task.detail || "本地新增任务，可后续补充说明。")}</p>
             </div>
-            <button class="task-row-status" type="button" data-cycle-task="${sourceIndex}" data-status="${escapeHtml(task.status)}">
+            <div class="task-row-status" data-status="${escapeHtml(task.status)}">
               ${escapeHtml(task.status)}
-            </button>
+            </div>
             <div class="task-row-meta">${escapeHtml(task.area || "General")}</div>
           </article>
-        `;
-      })
+        `
+      )
       .join("") || `<p class="empty-state">当前筛选下没有任务。</p>`;
 }
 
@@ -282,25 +281,21 @@ function bindEvents() {
     renderTaskPanel();
   });
 
-  $("#task-form").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    state.tasks.unshift({
-      title: form.get("title").trim(),
-      area: form.get("area").trim() || "General",
-      status: form.get("status"),
-      detail: "本地新增任务，部署后可替换为服务端保存。",
+  const taskForm = $("#task-form");
+  if (taskForm) {
+    taskForm.addEventListener("submit", (event) => {
+      event.preventDefault();
     });
-    saveTasks();
-    event.currentTarget.reset();
-    renderTaskPanel();
-  });
+  }
 
-  $("#reset-tasks").addEventListener("click", () => {
-    state.tasks = data.tasks.map((task) => ({ ...task }));
-    saveTasks();
-    renderTaskPanel();
-  });
+  const resetTasks = $("#reset-tasks");
+  if (resetTasks) {
+    resetTasks.addEventListener("click", () => {
+      state.tasks = data.tasks.map((task) => ({ ...task }));
+      saveTasks();
+      renderTaskPanel();
+    });
+  }
 
   $("#theme-toggle").addEventListener("click", () => {
     const next = document.documentElement.dataset.theme === "ink" ? "paper" : "ink";
