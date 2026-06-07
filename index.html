@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="告文 / zhanghaomin / setsuna-1106 - Nanjing University physics student portfolio for computational physics notes, C simulations, and Python visualizations.">
+    <meta name="description" content="告文 / zhanghaomin / setsuna-1106 - Nanjing University physics student portfolio for computational physics notes, C simulations, Python visualizations, reading tools, and textbook workflows.">
     <title>告文 | setsuna-1106</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=2">
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -30,11 +30,12 @@
         <div class="hero-copy">
           <h1>告文</h1>
           <p class="hero-statement">
-            南京大学物理系学生，GitHub @setsuna-1106。关注物理、计算、数学与科学写作，用 C 写数值核心，用 Python 做可视化。
+            南京大学物理系学生，GitHub @setsuna-1106。把计算物理作业、数值实验、教材处理流程和个人工具整理成可复用的网页入口。
           </p>
           <div class="hero-actions" aria-label="Primary links">
             <a class="button primary" href="https://github.com/setsuna-1106">GitHub</a>
             <a class="button secondary" href="#work">查看项目</a>
+            <a class="button secondary" href="advance/">动态版</a>
           </div>
         </div>
         <div class="hero-panel" aria-label="Live oscillator sketch">
@@ -68,7 +69,7 @@
           </div>
           <div>
             <dt>Public Repos</dt>
-            <dd>5 repositories</dd>
+            <dd>4 public repositories</dd>
           </div>
         </dl>
       </section>
@@ -79,7 +80,10 @@
         <div class="intro-copy">
           <h2 id="intro-title">Physics student. Computational notes. Small tools.</h2>
           <p>
-            这个站点把 GitHub 账号里的计算物理仓库、工具项目和学习记录集中展示。核心内容来自 c4phy：误差分析、数值微积分、蒙特卡洛、ODE、双摆、随机行走、自发衰变和球内光线反射。
+            这个站点把 GitHub 账号里的 4 个公开仓库集中展示。核心内容来自 c4phy：误差分析、数值微积分、蒙特卡洛、ODE、双摆、随机行走、自发衰变和球内光线反射；旁支项目记录教材翻译流水线、Obsidian 阅读插件和 GitHub Pages 主页。
+          </p>
+          <p>
+            页面分为两个入口：根目录是稳定的个人主页，适合放在 GitHub Pages 首页；advance 目录是可独立部署的动态版，使用 data.js 渲染项目、矩阵和任务面板，后续可以接入 API 或 CMS。
           </p>
         </div>
         <aside class="profile-card" aria-label="GitHub profile">
@@ -90,6 +94,28 @@
             <a href="https://github.com/setsuna-1106">github.com/setsuna-1106</a>
           </div>
         </aside>
+        <div class="focus-grid" aria-label="Site focus areas">
+          <article class="focus-card">
+            <span>Numerics</span>
+            <strong>误差、微分、积分、ODE</strong>
+            <p>从截断误差、中心差分和 Euler 步进开始，把公式推导落到可运行的 C 程序，再用图像检查收敛与稳定性。</p>
+          </article>
+          <article class="focus-card">
+            <span>Stochastic</span>
+            <strong>随机数、行走、衰变模型</strong>
+            <p>用线性同余随机数、Monte Carlo 抽样、随机行走和离散衰变连接概率模型、样本统计与理论曲线。</p>
+          </article>
+          <article class="focus-card">
+            <span>Workflow</span>
+            <strong>教材 PDF 到 LaTeX 输出</strong>
+            <p>记录中文 STEM 教材的识别、翻译、术语统一、版式重建和最终 PDF 生成流程，服务长文档学习材料整理。</p>
+          </article>
+          <article class="focus-card">
+            <span>Tools</span>
+            <strong>Obsidian / Pages / Dashboard</strong>
+            <p>围绕真实学习场景维护小工具：PDF 阅读进度、个人主页部署、动态任务面板和公开仓库索引。</p>
+          </article>
+        </div>
       </section>
 
       <section class="work section-grid" id="work" aria-labelledby="work-title">
@@ -97,13 +123,24 @@
         <div class="section-label">Selected Work</div>
         <div class="section-heading">
           <h2 id="work-title">GitHub index</h2>
-          <p>公开仓库中的学习项目、工具和配置入口。</p>
+          <p>根据 GitHub API 同步的公开仓库与 c4phy 模块入口。卡片重点说明每个仓库解决什么问题、当前适合从哪里继续深入。</p>
         </div>
         <div class="project-list">
           <article class="project-item">
             <div class="project-code">C01</div>
+            <h3>Profile / Pages</h3>
+            <p>公开主页仓库 setsuna-1106：用于展示个人入口、GitHub Pages 链接和学习项目索引，当前 GitHub API 显示主语言为 CSS。</p>
+            <ul>
+              <li>CSS</li>
+              <li>Pages</li>
+              <li>Live</li>
+            </ul>
+            <a class="project-link" href="https://github.com/setsuna-1106/setsuna-1106">Open repository</a>
+          </article>
+          <article class="project-item">
+            <div class="project-code">C02</div>
             <h3>c4phy</h3>
-            <p>计算物理学习记录：C 数值模拟、Python 可视化、误差分析、Monte Carlo、ODE 和小型物理项目。</p>
+            <p>计算物理主仓库：用 C 写误差分析、数值微积分、Monte Carlo、ODE、双摆、随机行走和衰变模型，用 Python 输出图像和实验记录。</p>
             <ul>
               <li>C</li>
               <li>Physics</li>
@@ -112,9 +149,9 @@
             <a class="project-link" href="https://github.com/setsuna-1106/c4phy">Open repository</a>
           </article>
           <article class="project-item">
-            <div class="project-code">C02</div>
+            <div class="project-code">C03</div>
             <h3>Textbook pipeline</h3>
-            <p>把中文 STEM 教材 PDF 转为 Cambridge/Oxford 风格英文 LaTeX PDF 的五阶段处理流程。</p>
+            <p>面向长教材的处理流程：PDF 解析、章节结构整理、术语翻译、LaTeX 版式复现和最终英文 PDF 输出，适合沉淀可重复的教材整理方法。</p>
             <ul>
               <li>TeX</li>
               <li>Translation</li>
@@ -123,9 +160,9 @@
             <a class="project-link" href="https://github.com/setsuna-1106/chinese-to-english-textbook">Open repository</a>
           </article>
           <article class="project-item">
-            <div class="project-code">C03</div>
+            <div class="project-code">C04</div>
             <h3>Obsidian PDF progress</h3>
-            <p>Obsidian 插件，用状态栏和文件浏览器标记 PDF 阅读进度，面向长文档学习流。</p>
+            <p>Obsidian 插件，用状态栏和文件浏览器标记 PDF 阅读进度，让长文档阅读、教材笔记和复习计划能被持续追踪。</p>
             <ul>
               <li>TypeScript</li>
               <li>Obsidian</li>
@@ -134,31 +171,9 @@
             <a class="project-link" href="https://github.com/setsuna-1106/obsidian-pdf-reading-progress">Open repository</a>
           </article>
           <article class="project-item">
-            <div class="project-code">C04</div>
-            <h3>Profile page</h3>
-            <p>GitHub profile / Pages 仓库，用来发布个人入口页和展示学习项目。</p>
-            <ul>
-              <li>HTML</li>
-              <li>Pages</li>
-              <li>Public</li>
-            </ul>
-            <a class="project-link" href="https://github.com/setsuna-1106/setsuna-1106">Open repository</a>
-          </article>
-          <article class="project-item">
             <div class="project-code">C05</div>
-            <h3>nvim-config</h3>
-            <p>Neovim 配置仓库，用来保存和迁移个人编辑环境。</p>
-            <ul>
-              <li>Editor</li>
-              <li>Config</li>
-              <li>Public</li>
-            </ul>
-            <a class="project-link" href="https://github.com/setsuna-1106/nvim-config">Open repository</a>
-          </article>
-          <article class="project-item">
-            <div class="project-code">C06</div>
             <h3>Computational physics modules</h3>
-            <p>c4phy 中的双摆、随机行走、振动、自发衰变、球内反射等模块，作为主页的核心学术展示。</p>
+            <p>c4phy 中的双摆、随机行走、阻尼振动、自发衰变、球内反射等模块，主页用图像和 canvas 把这些模块变成可浏览的学术展示。</p>
             <ul>
               <li>Simulation</li>
               <li>Visualization</li>
@@ -175,29 +190,29 @@
         <div class="method-copy">
           <h2 id="method-title">C computes. Python explains.</h2>
           <p>
-            仓库采用清晰的计算工作流：C 负责性能关键的数值循环，把数据写成 CSV 或二进制；Python 负责探索、检查、画图与论文式输出。部分实时项目直接使用 Raylib 在 C 端完成渲染。
+            仓库采用清晰的计算工作流：C 负责性能关键的数值循环，把数据写成 CSV 或二进制；Python 负责探索、检查、画图与论文式输出。网页本身承担第三层工作：把仓库、图像、任务状态和后续计划集中成一个可部署的索引。
           </p>
         </div>
         <div class="flow" aria-label="Computational workflow">
           <div class="flow-step">
             <span>01</span>
             <strong>Model</strong>
-            <p>把物理问题写成方程、边界条件和初始条件。</p>
+            <p>把物理问题写成方程、边界条件和初始条件，先确认量纲、近似和需要观察的量。</p>
           </div>
           <div class="flow-step">
             <span>02</span>
             <strong>Compute</strong>
-            <p>用 C 编写数值核心，控制步长、误差和输出格式。</p>
+            <p>用 C 编写数值核心，控制步长、随机种子、误差指标和输出格式。</p>
           </div>
           <div class="flow-step">
             <span>03</span>
             <strong>Visualize</strong>
-            <p>用 Python 或 Raylib 检查轨迹、分布、相图和误差。</p>
+            <p>用 Python 或 Raylib 检查轨迹、分布、相图、误差曲线和动画结果。</p>
           </div>
           <div class="flow-step">
             <span>04</span>
             <strong>Document</strong>
-            <p>把推导、代码入口和观察结果放回笔记。</p>
+            <p>把推导、代码入口、图像产物和下一步任务放回笔记与网页。</p>
           </div>
         </div>
       </section>
@@ -207,35 +222,35 @@
         <div class="section-label">Notes</div>
         <div class="section-heading">
           <h2 id="notes-title">Visual notebook</h2>
-          <p>从仓库笔记中选取的图像片段，保持项目本身的真实痕迹。</p>
+          <p>从仓库笔记中选取的图像片段，覆盖随机过程、数值微分、ODE 步进和伪随机数生成，保持项目本身的真实痕迹。</p>
         </div>
         <div class="note-gallery">
           <figure class="note-card large">
             <img src="assets/random-walk.png" alt="Random walk diagrams and 3D walk sketch">
             <figcaption>
               <span>Monte Carlo</span>
-              Random walk and diffusion
+              Random walk, diffusion, and sample paths
             </figcaption>
           </figure>
           <figure class="note-card">
             <img src="assets/central-difference.png" alt="Forward and central numerical difference diagrams">
             <figcaption>
               <span>Numerical calculus</span>
-              Central difference
+              Forward and central difference comparison
             </figcaption>
           </figure>
           <figure class="note-card">
             <img src="assets/euler-rule.png" alt="Euler method integration diagram">
             <figcaption>
               <span>ODE</span>
-              Euler step error
+              Euler rule and local step error
             </figcaption>
           </figure>
           <figure class="note-card formula">
             <img src="assets/linear-congruent.png" alt="Linear congruent random number formula">
             <figcaption>
               <span>Random number</span>
-              Linear congruent method
+              Linear congruent random number method
             </figcaption>
           </figure>
         </div>
@@ -246,7 +261,7 @@
         <div class="section-label">Progress</div>
         <div class="section-heading">
           <h2 id="progress-title">Learning matrix</h2>
-          <p>笔记、C 代码和可视化之间的完成状态。</p>
+          <p>笔记、C 代码和可视化之间的完成状态。这里把 c4phy 的主题拆得更细，便于看见下一步工作。</p>
         </div>
         <div class="matrix" role="table" aria-label="Learning progress matrix">
           <div class="matrix-row matrix-head" role="row">
@@ -270,6 +285,15 @@
           <div class="matrix-row" role="row">
             <span role="cell">Decay model</span><span role="cell">draft</span><span role="cell">yes</span><span role="cell">yes</span>
           </div>
+          <div class="matrix-row" role="row">
+            <span role="cell">Random number</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">draft</span>
+          </div>
+          <div class="matrix-row" role="row">
+            <span role="cell">Ray reflection</span><span role="cell">draft</span><span role="cell">yes</span><span role="cell">open</span>
+          </div>
+          <div class="matrix-row" role="row">
+            <span role="cell">Textbook pipeline</span><span role="cell">yes</span><span role="cell">open</span><span role="cell">open</span>
+          </div>
         </div>
       </section>
 
@@ -278,7 +302,7 @@
         <div class="section-label">Tasks</div>
         <div class="section-heading">
           <h2 id="tasks-title">Current task statistics</h2>
-          <p>计算物理学习与个人项目的当前任务状态，由页面脚本自动统计。</p>
+          <p>计算物理学习与个人项目的当前任务状态，由页面脚本自动统计。任务内容对应仓库中已经出现的模块和这个网站后续要补的页面材料。</p>
         </div>
         <div class="task-dashboard" aria-label="Current task statistics">
           <div class="task-summary" aria-label="Task summary">
@@ -324,11 +348,12 @@
         <div class="contact-copy">
           <h2 id="contact-title">Find the work on GitHub.</h2>
           <p>
-            这个页面会同步到独立 GitHub Pages 仓库，不提交到 c4phy。入口保留为 GitHub profile、Pages 站点和计算物理项目仓库。
+            这个页面会同步到独立 GitHub Pages 仓库，不提交到 c4phy。主页用于索引公开仓库和学习轨迹；更细的交互版本在 advance 目录中，适合作为下一版个人看板继续迭代。
           </p>
           <div class="contact-actions" aria-label="Contact links">
             <a class="button primary" href="https://github.com/setsuna-1106">GitHub Profile</a>
             <a class="button secondary" href="https://setsuna-1106.github.io/setsuna-1106/">GitHub Pages</a>
+            <a class="button secondary" href="advance/">Advance Site</a>
           </div>
         </div>
         <div class="contact-card" aria-label="Site facts">
@@ -344,6 +369,6 @@
       <span>Built from GitHub profile data and c4phy notes.</span>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2"></script>
   </body>
 </html>

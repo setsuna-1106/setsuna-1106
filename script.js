@@ -12,25 +12,31 @@ const tasks = [
     title: "整理 c4phy 项目主页",
     area: "Website",
     status: "done",
-    detail: "完成瑞士风个人网站、GitHub profile 信息和项目入口。",
+    detail: "完成瑞士风个人网站、GitHub profile 信息、项目入口和 advance 动态版链接。",
   },
   {
     title: "补全任务统计模块",
     area: "Website",
-    status: "doing",
-    detail: "把学习任务转换成可筛选、可自动统计的前端组件。",
+    status: "done",
+    detail: "把学习任务转换成可筛选、可自动统计的前端组件，并把状态拆成 done / doing / open。",
+  },
+  {
+    title: "同步 GitHub 公开仓库列表",
+    area: "GitHub",
+    status: "done",
+    detail: "根据 GitHub API 更新为 4 个公开仓库，并移除未出现在公开列表中的项目展示。",
   },
   {
     title: "完善 ODE / nonlinear oscillations 笔记",
     area: "Notes",
     status: "doing",
-    detail: "继续整理 Euler、RK2、RK4 与非线性振子的误差观察。",
+    detail: "继续整理 Euler、RK2、RK4、阻尼振子与非线性振子的相位误差和稳定性观察。",
   },
   {
     title: "给随机行走加入更多可视化",
     area: "Simulation",
     status: "open",
-    detail: "补充自回避行走、扩散距离和统计分布图。",
+    detail: "补充自回避行走、均方位移、扩散距离和多样本统计分布图。",
   },
   {
     title: "整理 spontaneous decay 文档",
@@ -39,10 +45,28 @@ const tasks = [
     detail: "把离散衰变模拟和指数近似的对照写成项目说明。",
   },
   {
+    title: "补充球内反射模块说明",
+    area: "Simulation",
+    status: "open",
+    detail: "说明光线在球内反射的几何假设、边界处理和可视化输出方式。",
+  },
+  {
+    title: "细化教材转换流程页面",
+    area: "Workflow",
+    status: "doing",
+    detail: "把 PDF 解析、术语统一、LaTeX 重建和最终校对拆成可复用步骤。",
+  },
+  {
+    title: "给 Obsidian 插件补使用场景",
+    area: "Tooling",
+    status: "open",
+    detail: "补充长文档阅读、教材复习和文件浏览器进度提示的实际用例。",
+  },
+  {
     title: "检查 Pages 部署内容",
     area: "GitHub",
     status: "done",
-    detail: "独立 Pages 仓库已经接入个人网站，不提交到 c4phy。",
+    detail: "独立 Pages 仓库已经接入个人网站，根目录主页和 advance 子站可以分别部署。",
   },
 ];
 

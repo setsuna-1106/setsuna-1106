@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="告文 / setsuna-1106 dynamic portfolio for computational physics notes, C simulations, Python visualizations, and deployable project records."
+    >
+    <title>告文 Advance | setsuna-1106</title>
+    <link rel="stylesheet" href="styles.css?v=2">
+    <script src="data.js?v=3" defer></script>
+    <script src="app.js?v=3" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header" aria-label="Primary navigation">
+      <a class="brand" href="#overview" aria-label="setsuna-1106 advance home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>setsuna-1106 / advance</span>
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#overview" data-route="overview">Overview</a>
+        <a href="#projects" data-route="projects">Projects</a>
+        <a href="#lab" data-route="lab">Lab</a>
+        <a href="#notes" data-route="notes">Notes</a>
+        <a href="#tasks" data-route="tasks">Tasks</a>
+        <a href="#deploy" data-route="deploy">Deploy</a>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme">
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <main id="main">
+      <section class="hero section-grid" id="overview" aria-labelledby="hero-title">
+        <div class="section-index" aria-hidden="true">01</div>
+        <div class="hero-copy">
+          <p class="system-line">Dynamic computational portfolio</p>
+          <h1 id="hero-title">告文</h1>
+          <p class="hero-statement">
+            南京大学物理系学生，GitHub @setsuna-1106。把计算物理笔记、C 数值核心、Python 可视化、工具项目和任务队列整理成可持续部署的动态网页。
+          </p>
+          <div class="hero-actions" aria-label="Primary links">
+            <a class="button primary" href="https://github.com/setsuna-1106">GitHub</a>
+            <a class="button secondary" href="#projects">查看项目</a>
+          </div>
+        </div>
+
+        <aside class="control-panel hero-panel" aria-label="Realtime oscillator lab">
+          <div class="panel-head">
+            <span>Live SHO</span>
+            <span id="sim-status">running</span>
+          </div>
+          <canvas id="oscillator" width="720" height="420"></canvas>
+          <div class="sim-controls" aria-label="Simulation controls">
+            <button class="icon-button" id="play-sim" type="button" aria-label="Pause simulation" title="Pause simulation">
+              <span aria-hidden="true">II</span>
+            </button>
+            <label>
+              <span>gamma</span>
+              <input id="damping" type="range" min="0" max="0.14" step="0.01" value="0.04">
+            </label>
+            <label>
+              <span>omega</span>
+              <input id="frequency" type="range" min="0.8" max="2.2" step="0.1" value="1.4">
+            </label>
+          </div>
+        </aside>
+
+        <dl class="hero-meta" id="hero-meta" aria-label="Profile facts"></dl>
+      </section>
+
+      <section class="profile section-grid" aria-labelledby="profile-title">
+        <div class="section-index" aria-hidden="true">02</div>
+        <div class="section-label">Profile</div>
+        <div class="section-heading">
+          <h2 id="profile-title">Physics, computation, notes, tools.</h2>
+          <p>
+            新版本把原站的静态展示升级为数据驱动界面：项目、笔记、学习矩阵、任务状态和交互模块都由脚本渲染。当前仍可直接静态部署，后续也可以把 data.js 替换为服务器接口或 CMS 数据源。
+          </p>
+        </div>
+        <article class="profile-card">
+          <img src="assets/github-avatar.jpg" alt="GitHub avatar for setsuna-1106">
+          <div>
+            <span>GitHub Profile</span>
+            <strong>setsuna-1106</strong>
+            <a href="https://github.com/setsuna-1106">github.com/setsuna-1106</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="projects section-grid" id="projects" aria-labelledby="projects-title">
+        <div class="section-index" aria-hidden="true">03</div>
+        <div class="section-label">Projects</div>
+        <div class="section-heading">
+          <h2 id="projects-title">GitHub index</h2>
+          <p>用搜索、标签筛选和状态统计管理公开仓库、网页入口与学习模块。</p>
+        </div>
+        <div class="project-tools" aria-label="Project tools">
+          <label class="search-box">
+            <span>Search</span>
+            <input id="project-search" type="search" placeholder="c4phy / ODE / TeX">
+          </label>
+          <div class="filter-row" id="project-filters" aria-label="Project tag filters"></div>
+        </div>
+        <div class="project-list" id="project-list" aria-live="polite"></div>
+      </section>
+
+      <section class="lab section-grid" id="lab" aria-labelledby="lab-title">
+        <div class="section-index" aria-hidden="true">04</div>
+        <div class="section-label">Lab</div>
+        <div class="section-heading">
+          <h2 id="lab-title">Interactive notebook</h2>
+          <p>点击模块查看说明，右侧的随机行走画布会按当前模块强度实时更新，用一个轻量交互面板承接 c4phy 中不同主题。</p>
+        </div>
+        <div class="module-list" id="module-list" aria-label="Computational modules"></div>
+        <aside class="control-panel module-detail" id="module-detail" aria-live="polite"></aside>
+      </section>
+
+      <section class="notes section-grid" id="notes" aria-labelledby="notes-title">
+        <div class="section-index" aria-hidden="true">05</div>
+        <div class="section-label">Notes</div>
+        <div class="section-heading">
+          <h2 id="notes-title">Visual notebook</h2>
+          <p>保留现有项目图像，让页面仍然指向真实学习材料，而不是只做展示包装。</p>
+        </div>
+        <div class="note-gallery" id="note-gallery"></div>
+      </section>
+
+      <section class="matrix-section section-grid" aria-labelledby="matrix-title">
+        <div class="section-index" aria-hidden="true">06</div>
+        <div class="section-label">Matrix</div>
+        <div class="section-heading">
+          <h2 id="matrix-title">Learning matrix</h2>
+          <p>笔记、C 代码和可视化三条线的完成状态，由数据层统一生成。</p>
+        </div>
+        <div class="matrix" id="matrix" role="table" aria-label="Learning progress matrix"></div>
+      </section>
+
+      <section class="tasks section-grid" id="tasks" aria-labelledby="tasks-title">
+        <div class="section-index" aria-hidden="true">07</div>
+        <div class="section-label">Tasks</div>
+        <div class="section-heading">
+          <h2 id="tasks-title">Task console</h2>
+          <p>任务可筛选、可添加、可重置；本地修改会存入浏览器 localStorage，部署后也能作为轻量个人看板使用。</p>
+        </div>
+        <div class="task-dashboard" aria-label="Current task statistics">
+          <div class="task-summary" id="task-summary"></div>
+          <div class="task-meter" aria-label="Completion rate">
+            <div class="task-meter-head">
+              <span>Completion</span>
+              <strong id="task-percent">0%</strong>
+            </div>
+            <div class="task-meter-track" aria-hidden="true">
+              <span id="task-meter-bar"></span>
+            </div>
+          </div>
+          <div class="task-filters" id="task-filters" aria-label="Task filters"></div>
+          <form class="task-form" id="task-form" aria-label="Add task">
+            <label>
+              <span>Title</span>
+              <input id="task-title" name="title" type="text" placeholder="新的学习任务" required>
+            </label>
+            <label>
+              <span>Area</span>
+              <input id="task-area" name="area" type="text" placeholder="Notes">
+            </label>
+            <label>
+              <span>Status</span>
+              <select id="task-status" name="status">
+                <option value="open">open</option>
+                <option value="doing">doing</option>
+                <option value="done">done</option>
+              </select>
+            </label>
+            <button class="button primary" type="submit">Add</button>
+            <button class="button secondary" id="reset-tasks" type="button">Reset</button>
+          </form>
+          <div class="task-list" id="task-list" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="deploy section-grid" id="deploy" aria-labelledby="deploy-title">
+        <div class="section-index" aria-hidden="true">08</div>
+        <div class="section-label">Deploy</div>
+        <div class="section-heading">
+          <h2 id="deploy-title">Server ready structure</h2>
+          <p>当前版本可以静态部署；如果以后接服务器，只需要让数据层从 API 获取内容，项目筛选、任务统计和矩阵渲染不需要重写。</p>
+        </div>
+        <div class="deploy-board" aria-label="Deployment plan">
+          <article>
+            <span>01</span>
+            <strong>Static first</strong>
+            <p>上传整个 advance 文件夹到 Nginx、GitHub Pages、Cloudflare Pages 或任意静态服务器。</p>
+          </article>
+          <article>
+            <span>02</span>
+            <strong>Data layer</strong>
+            <p>项目、任务、笔记、矩阵集中在 data.js，后续可替换成 /api/profile.json。</p>
+          </article>
+          <article>
+            <span>03</span>
+            <strong>Client state</strong>
+            <p>任务看板使用 localStorage 保存本地编辑，服务器版可改为数据库同步。</p>
+          </article>
+        </div>
+        <pre class="code-panel" aria-label="Static server command"><code>python3 -m http.server 8080 --directory advance</code></pre>
+      </section>
+
+      <section class="contact section-grid" id="contact" aria-labelledby="contact-title">
+        <div class="section-index" aria-hidden="true">09</div>
+        <div class="section-label">Contact</div>
+        <div class="contact-copy">
+          <h2 id="contact-title">Find the work on GitHub.</h2>
+          <div class="contact-actions" aria-label="Contact links">
+            <a class="button primary" href="https://github.com/setsuna-1106">GitHub Profile</a>
+            <a class="button secondary" href="https://setsuna-1106.github.io/setsuna-1106/">GitHub Pages</a>
+          </div>
+        </div>
+        <div class="contact-card" id="contact-card" aria-label="Site facts"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>setsuna-1106</span>
+      <span>Advance build: data-driven static app.</span>
+    </footer>
+  </body>
+</html>
