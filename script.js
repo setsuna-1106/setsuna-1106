@@ -6,6 +6,13 @@ const playButton = document.querySelector("#play-sim");
 const statusText = document.querySelector("#sim-status");
 const taskList = document.querySelector("#task-list");
 const taskFilterButtons = document.querySelectorAll("[data-task-filter]");
+const navLinks = Array.from(document.querySelectorAll(".nav-links a"));
+const navTargets = navLinks
+  .map((link) => {
+    const id = (link.getAttribute("href") || "").replace(/^#/, "");
+    return id ? { link, target: document.getElementById(id) } : null;
+  })
+  .filter(Boolean);
 
 const tasks = [
   {
@@ -230,8 +237,10 @@ function frame(now) {
 }
 
 function updatePlayState() {
-  statusText.textContent = running ? "running" : "paused";
-  statusText.style.color = running ? "#168a61" : "#e2382a";
+  const textNode = statusText.querySelector(".panel-status-text");
+  statusText.classList.toggle("is-paused", !running);
+  if (textNode) textNode.textContent = running ? "running" : "paused";
+  statusText.style.color = "";
   playButton.setAttribute("aria-label", running ? "Pause simulation" : "Play simulation");
   playButton.setAttribute("title", running ? "Pause simulation" : "Play simulation");
   playButton.querySelector("span").textContent = running ? "II" : ">";
@@ -316,3 +325,25 @@ renderTaskStats();
 renderTasks();
 bindTaskFilters();
 requestAnimationFrame(frame);
+
+let activeNavId = null;
+function setActiveNav(id) {
+  if (id === activeNavId) return;
+  activeNavId = id;
+  navTargets.forEach(({ link, target }) => {
+    link.classList.toggle("is-current", target.id === id);
+  });
+}
+
+if ("IntersectionObserver" in window) {
+  const navObserver = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      if (visible[0]) setActiveNav(visible[0].target.id);
+    },
+    { rootMargin: "-30% 0px -55% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+  );
+  navTargets.forEach(({ target }) => navObserver.observe(target));
+}

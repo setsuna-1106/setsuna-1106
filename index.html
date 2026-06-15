@@ -41,7 +41,10 @@
         <div class="hero-panel" aria-label="Live oscillator sketch">
           <div class="panel-head">
             <span>SHO / damping</span>
-            <span id="sim-status">running</span>
+            <span class="panel-status" id="sim-status">
+              <span class="panel-status-dot" aria-hidden="true"></span>
+              <span class="panel-status-text">running</span>
+            </span>
           </div>
           <canvas id="oscillator" width="720" height="420"></canvas>
           <div class="sim-controls" aria-label="Simulation controls">
@@ -271,28 +274,28 @@
             <span role="columnheader">Viz</span>
           </div>
           <div class="matrix-row" role="row">
-            <span role="cell">Error analysis</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">open</span>
+            <span role="cell">Error analysis</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="open">open</span>
           </div>
           <div class="matrix-row" role="row">
-            <span role="cell">Differentiation</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">yes</span>
+            <span role="cell">Differentiation</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="yes">yes</span>
           </div>
           <div class="matrix-row" role="row">
-            <span role="cell">Monte Carlo</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">open</span>
+            <span role="cell">Monte Carlo</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="open">open</span>
           </div>
           <div class="matrix-row" role="row">
-            <span role="cell">Double pendulum</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">yes</span>
+            <span role="cell">Double pendulum</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="yes">yes</span>
           </div>
           <div class="matrix-row" role="row">
-            <span role="cell">Decay model</span><span role="cell">draft</span><span role="cell">yes</span><span role="cell">yes</span>
+            <span role="cell">Decay model</span><span role="cell" data-status="draft">draft</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="yes">yes</span>
           </div>
           <div class="matrix-row" role="row">
-            <span role="cell">Random number</span><span role="cell">yes</span><span role="cell">yes</span><span role="cell">draft</span>
+            <span role="cell">Random number</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="draft">draft</span>
           </div>
           <div class="matrix-row" role="row">
-            <span role="cell">Ray reflection</span><span role="cell">draft</span><span role="cell">yes</span><span role="cell">open</span>
+            <span role="cell">Ray reflection</span><span role="cell" data-status="draft">draft</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="open">open</span>
           </div>
           <div class="matrix-row" role="row">
-            <span role="cell">Textbook pipeline</span><span role="cell">yes</span><span role="cell">open</span><span role="cell">open</span>
+            <span role="cell">Textbook pipeline</span><span role="cell" data-status="yes">yes</span><span role="cell" data-status="open">open</span><span role="cell" data-status="open">open</span>
           </div>
         </div>
       </section>
@@ -367,6 +370,10 @@
     <footer class="site-footer">
       <span>setsuna-1106</span>
       <span>Computational physics notes and project records.</span>
+      <span class="site-footer-links">
+        <a href="https://github.com/setsuna-1106">GitHub</a>
+        <a href="mailto:zhang.haomin1106@gmail.com">zhang.haomin1106@gmail.com</a>
+      </span>
     </footer>
 
     <script src="script.js?v=3"></script>
