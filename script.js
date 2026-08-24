@@ -333,6 +333,28 @@ function bindInteractions() {
   }
 }
 
+function setupLiveRepoCount() {
+  const node = $("#fact-repos");
+  if (!node) return;
+  const CACHE_KEY = "setsuna-repo-count";
+  const ONE_DAY = 24 * 60 * 60 * 1000;
+  let cached = null;
+  try { cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null"); } catch (error) {}
+  if (cached && Date.now() - cached.at < ONE_DAY) {
+    if (Number.isFinite(cached.count)) node.textContent = String(cached.count).padStart(2, "0");
+    return;
+  }
+  fetch("https://api.github.com/users/setsuna-1106")
+    .then((response) => { if (!response.ok) throw new Error(response.status); return response.json(); })
+    .then((data) => {
+      const count = data.public_repos;
+      if (!Number.isFinite(count)) return;
+      node.textContent = String(count).padStart(2, "0");
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), count })); } catch (error) {}
+    })
+    .catch(() => {});
+}
+
 function setupReveal() {
   const items = $$(`[data-reveal]`);
   if (!("IntersectionObserver" in window) || reducedMotion) { items.forEach((item) => item.classList.add("is-visible")); return; }
@@ -368,6 +390,7 @@ setActiveModule("oscillator");
 bindInteractions();
 setupReveal();
 setupNav();
+setupLiveRepoCount();
 drawHero();
 drawLab();
 requestAnimationFrame(frame);
