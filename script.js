@@ -3,6 +3,15 @@ document.documentElement.classList.add("js-ready");
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const THEME_KEY = "setsuna-theme";
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  try { localStorage.setItem(THEME_KEY, theme); } catch (error) {}
+}
+try {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+} catch (error) {}
 
 const tasks = [
   { title: "完善 ODE / nonlinear oscillations 笔记", area: "Notes", status: "doing", detail: "继续整理 Euler、RK2、RK4、阻尼振子与非线性振子的相位误差和稳定性观察。" },
@@ -63,8 +72,18 @@ function resizeCanvas(canvas) {
   return { width, height, ctx };
 }
 
+function themeColors() {
+  const styles = getComputedStyle(document.documentElement);
+  return {
+    canvasBg: styles.getPropertyValue("--canvas-bg").trim() || "#08141c",
+    ink: styles.getPropertyValue("--ink").trim() || "#ecf6f2",
+    muted: styles.getPropertyValue("--muted").trim(),
+  };
+}
+
 function drawGrid(ctx, width, height, gap = 30) {
-  ctx.fillStyle = "#08141c";
+  const { canvasBg } = themeColors();
+  ctx.fillStyle = canvasBg;
   ctx.fillRect(0, 0, width, height);
   ctx.strokeStyle = "rgba(57, 91, 101, .34)";
   ctx.lineWidth = 1;
@@ -86,6 +105,12 @@ function oscillatorValue(t, gamma, omega) {
   return Math.exp(-gamma * t) * Math.cos(omega * t);
 }
 
+function inkAxis(alpha) {
+  const ink = themeColors().ink;
+  const n = parseInt(ink.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+}
+
 function drawHero() {
   const canvas = heroControls.canvas;
   const damping = heroControls.damping;
@@ -100,7 +125,7 @@ function drawHero() {
   const amp = Math.min(100, height * .3);
 
   drawGrid(ctx, width, height, 30);
-  ctx.strokeStyle = "rgba(236, 246, 242, .66)";
+  ctx.strokeStyle = inkAxis(.66);
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(left, originY);
@@ -153,7 +178,7 @@ function drawHero() {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  ctx.fillStyle = "#91a5a9";
+  ctx.fillStyle = themeColors().muted;
   ctx.font = "700 10px SFMono-Regular, Menlo, monospace";
   ctx.fillText("AMPLITUDE", left, height - 14);
   ctx.fillText("t", right - 7, originY - 10);
@@ -171,7 +196,7 @@ function drawLabOscillator(ctx, width, height) {
   const left = 28;
   const right = width - 24;
   const amp = Math.min(110, height * .3);
-  ctx.strokeStyle = "rgba(236, 246, 242, .5)";
+  ctx.strokeStyle = inkAxis(.5);
   ctx.beginPath();
   ctx.moveTo(left, originY);
   ctx.lineTo(right, originY);
@@ -194,7 +219,7 @@ function drawLabOscillator(ctx, width, height) {
 function drawLabWalk(ctx, width, height) {
   const centerX = width * .5;
   const centerY = height * .5;
-  ctx.strokeStyle = "rgba(236, 246, 242, .4)";
+  ctx.strokeStyle = inkAxis(.4);
   ctx.beginPath();
   ctx.moveTo(24, centerY);
   ctx.lineTo(width - 24, centerY);
@@ -222,7 +247,7 @@ function drawLabWalk(ctx, width, height) {
   ctx.beginPath();
   ctx.arc(centerX + Math.cos(marker * 1.73) * marker * .8, centerY + Math.sin(marker * 1.73) * marker * .8, 4, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#91a5a9";
+  ctx.fillStyle = themeColors().muted;
   ctx.font = "700 11px SFMono-Regular, Menlo, monospace";
   ctx.fillText("RMS / SAMPLE PATHS", 26, 30);
 }
@@ -253,7 +278,7 @@ function drawLabPendulum(ctx, width, height) {
   ctx.beginPath(); ctx.arc(x1, y1, 7, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = "#ff9d57";
   ctx.beginPath(); ctx.arc(x2, y2, 9, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = "#91a5a9";
+  ctx.fillStyle = themeColors().muted;
   ctx.font = "700 11px SFMono-Regular, Menlo, monospace";
   ctx.fillText("SENSITIVE INITIAL CONDITIONS", 24, height - 22);
 }
@@ -322,6 +347,12 @@ function bindInteractions() {
   let resizeTimer = 0;
   window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { drawHero(); drawLab(); }, 120); });
   window.addEventListener("scroll", () => { const max = document.documentElement.scrollHeight - window.innerHeight; const progress = max ? (window.scrollY / max) * 100 : 0; const bar = $("#scroll-progress"); if (bar) bar.style.width = `${progress}%`; }, { passive: true });
+  $("#theme-toggle")?.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    applyTheme(next);
+    drawHero();
+    drawLab();
+  });
   if ("IntersectionObserver" in window) {
     const watchCanvas = (selector, setter) => {
       const canvas = $(selector);
@@ -379,7 +410,8 @@ function frame(now) {
   if ((heroRunning && heroVisible) || (labRunning && labVisible)) time += delta * 1.8;
   if (heroRunning && heroVisible) drawHero();
   if (labRunning && labVisible) drawLab();
-  requestAnimationFrame(frame);
+  window.matchMedia("(prefers-color-scheme: light)").addEventListener?.("change", () => { drawHero(); drawLab(); });
+requestAnimationFrame(frame);
 }
 
 updatePlayButton($("#play-sim"), heroRunning, "simulation");
