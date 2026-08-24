@@ -41,6 +41,14 @@ let lastFrame = performance.now();
 let activeModule = "oscillator";
 let taskFilter = "all";
 let pendulumTrail = [];
+let heroVisible = true;
+let labVisible = true;
+
+const heroControls = {
+  canvas: $("#oscillator"),
+  damping: $("#damping"),
+  frequency: $("#frequency"),
+};
 
 function resizeCanvas(canvas) {
   if (!canvas) return { width: 0, height: 0 };
@@ -79,9 +87,9 @@ function oscillatorValue(t, gamma, omega) {
 }
 
 function drawHero() {
-  const canvas = $("#oscillator");
-  const damping = $("#damping");
-  const frequency = $("#frequency");
+  const canvas = heroControls.canvas;
+  const damping = heroControls.damping;
+  const frequency = heroControls.frequency;
   if (!canvas || !damping || !frequency) return;
   const { width, height, ctx } = resizeCanvas(canvas);
   const gamma = Number(damping.value);
@@ -311,8 +319,18 @@ function bindInteractions() {
   $("#frequency")?.addEventListener("input", drawHero);
   $$(`[data-module]`).forEach((button) => button.addEventListener("click", () => setActiveModule(button.dataset.module)));
   $$(`[data-task-filter]`).forEach((button) => button.addEventListener("click", () => { taskFilter = button.dataset.taskFilter; $$(`[data-task-filter]`).forEach((item) => item.classList.toggle("is-active", item === button)); renderTasks(); }));
-  window.addEventListener("resize", () => { drawHero(); drawLab(); });
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { drawHero(); drawLab(); }, 120); });
   window.addEventListener("scroll", () => { const max = document.documentElement.scrollHeight - window.innerHeight; const progress = max ? (window.scrollY / max) * 100 : 0; const bar = $("#scroll-progress"); if (bar) bar.style.width = `${progress}%`; }, { passive: true });
+  if ("IntersectionObserver" in window) {
+    const watchCanvas = (selector, setter) => {
+      const canvas = $(selector);
+      if (!canvas) return;
+      new IntersectionObserver((entries) => { setter(entries[0].isIntersecting); }, { threshold: 0 }).observe(canvas);
+    };
+    watchCanvas("#oscillator", (visible) => { heroVisible = visible; });
+    watchCanvas("#lab-canvas", (visible) => { labVisible = visible; if (visible && !reducedMotion) drawLab(); });
+  }
 }
 
 function setupReveal() {
@@ -336,9 +354,9 @@ function setupNav() {
 function frame(now) {
   const delta = Math.min(.05, (now - lastFrame) / 1000);
   lastFrame = now;
-  if (heroRunning || labRunning) time += delta * 1.8;
-  if (heroRunning) drawHero();
-  if (labRunning) drawLab();
+  if ((heroRunning && heroVisible) || (labRunning && labVisible)) time += delta * 1.8;
+  if (heroRunning && heroVisible) drawHero();
+  if (labRunning && labVisible) drawLab();
   requestAnimationFrame(frame);
 }
 
