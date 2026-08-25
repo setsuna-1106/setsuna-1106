@@ -75,17 +75,28 @@ function resizeCanvas(canvas) {
 function themeColors() {
   const styles = getComputedStyle(document.documentElement);
   return {
-    canvasBg: styles.getPropertyValue("--canvas-bg").trim() || "#08141c",
-    ink: styles.getPropertyValue("--ink").trim() || "#ecf6f2",
+    canvasBg: styles.getPropertyValue("--canvas-bg").trim() || "#202a35",
+    ink: styles.getPropertyValue("--ink").trim() || "#20252b",
     muted: styles.getPropertyValue("--muted").trim(),
+    line: styles.getPropertyValue("--line").trim() || "#394348",
+    blue: styles.getPropertyValue("--blue").trim() || "#3158d7",
+    red: styles.getPropertyValue("--red").trim() || "#d95e4d",
+    mint: styles.getPropertyValue("--mint").trim() || "#b9ddd0",
+    yellow: styles.getPropertyValue("--yellow").trim() || "#f0ca55",
   };
 }
 
+function colorWithAlpha(hex, alpha) {
+  const value = hex.replace("#", "");
+  const number = parseInt(value, 16);
+  return `rgba(${(number >> 16) & 255}, ${(number >> 8) & 255}, ${number & 255}, ${alpha})`;
+}
+
 function drawGrid(ctx, width, height, gap = 30) {
-  const { canvasBg } = themeColors();
+  const { canvasBg, line } = themeColors();
   ctx.fillStyle = canvasBg;
   ctx.fillRect(0, 0, width, height);
-  ctx.strokeStyle = "rgba(57, 91, 101, .34)";
+  ctx.strokeStyle = colorWithAlpha(line, .34);
   ctx.lineWidth = 1;
   for (let x = 0; x <= width; x += gap) {
     ctx.beginPath();
@@ -133,7 +144,7 @@ function drawHero() {
   ctx.stroke();
 
   const samples = Math.max(180, Math.floor(width * .7));
-  ctx.strokeStyle = "#5ee7d1";
+  ctx.strokeStyle = themeColors().mint;
   ctx.lineWidth = 2.5;
   ctx.beginPath();
   for (let i = 0; i < samples; i += 1) {
@@ -144,7 +155,7 @@ function drawHero() {
   }
   ctx.stroke();
 
-  ctx.strokeStyle = "#ff9d57";
+  ctx.strokeStyle = themeColors().red;
   ctx.lineWidth = 1;
   ctx.setLineDash([6, 7]);
   for (const sign of [1, -1]) {
@@ -163,14 +174,14 @@ function drawHero() {
   const dotX = left + phase * (right - left);
   const dotY = originY - oscillatorValue(phase * 16, gamma, omega) * amp;
   ctx.save();
-  ctx.shadowColor = "#c6f45c";
+  ctx.shadowColor = themeColors().yellow;
   ctx.shadowBlur = 18;
-  ctx.fillStyle = "#c6f45c";
+  ctx.fillStyle = themeColors().yellow;
   ctx.beginPath();
   ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
-  ctx.strokeStyle = "rgba(198, 244, 92, .58)";
+  ctx.strokeStyle = colorWithAlpha(themeColors().yellow, .58);
   ctx.setLineDash([3, 5]);
   ctx.beginPath();
   ctx.moveTo(dotX, dotY);
@@ -201,7 +212,7 @@ function drawLabOscillator(ctx, width, height) {
   ctx.moveTo(left, originY);
   ctx.lineTo(right, originY);
   ctx.stroke();
-  ctx.strokeStyle = "#5ee7d1";
+  ctx.strokeStyle = themeColors().mint;
   ctx.lineWidth = 2.5;
   ctx.beginPath();
   for (let i = 0; i < 260; i += 1) {
@@ -211,7 +222,7 @@ function drawLabOscillator(ctx, width, height) {
     if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
   }
   ctx.stroke();
-  ctx.fillStyle = "#c6f45c";
+  ctx.fillStyle = themeColors().yellow;
   ctx.font = "700 11px SFMono-Regular, Menlo, monospace";
   ctx.fillText("x(t)", right - 28, originY - amp - 12);
 }
@@ -227,7 +238,7 @@ function drawLabWalk(ctx, width, height) {
   ctx.lineTo(centerX, height - 18);
   ctx.stroke();
   for (let path = 0; path < 5; path += 1) {
-    ctx.strokeStyle = path === 4 ? "#c6f45c" : `rgba(94, 231, 209, ${.18 + path * .1})`;
+    ctx.strokeStyle = path === 4 ? themeColors().yellow : colorWithAlpha(themeColors().mint, .18 + path * .1);
     ctx.lineWidth = path === 4 ? 2 : 1;
     ctx.beginPath();
     let x = centerX;
@@ -243,7 +254,7 @@ function drawLabWalk(ctx, width, height) {
     ctx.stroke();
   }
   const marker = (time * 18) % 120;
-  ctx.fillStyle = "#ff9d57";
+  ctx.fillStyle = themeColors().red;
   ctx.beginPath();
   ctx.arc(centerX + Math.cos(marker * 1.73) * marker * .8, centerY + Math.sin(marker * 1.73) * marker * .8, 4, 0, Math.PI * 2);
   ctx.fill();
@@ -265,18 +276,18 @@ function drawLabPendulum(ctx, width, height) {
   const y2 = y1 + Math.cos(angleTwo) * armTwo;
   pendulumTrail.push({ x: x2, y: y2 });
   if (pendulumTrail.length > 160) pendulumTrail.shift();
-  ctx.strokeStyle = "rgba(255, 109, 143, .6)";
+  ctx.strokeStyle = colorWithAlpha(themeColors().red, .6);
   ctx.lineWidth = 1;
   ctx.beginPath();
   pendulumTrail.forEach((point, index) => { if (index === 0) ctx.moveTo(point.x, point.y); else ctx.lineTo(point.x, point.y); });
   ctx.stroke();
-  ctx.strokeStyle = "#5ee7d1";
+  ctx.strokeStyle = themeColors().mint;
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(originX, originY); ctx.lineTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-  ctx.fillStyle = "#c6f45c";
+  ctx.fillStyle = themeColors().yellow;
   ctx.beginPath(); ctx.arc(x1, y1, 7, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = "#ff9d57";
+  ctx.fillStyle = themeColors().red;
   ctx.beginPath(); ctx.arc(x2, y2, 9, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = themeColors().muted;
   ctx.font = "700 11px SFMono-Regular, Menlo, monospace";
@@ -348,7 +359,8 @@ function bindInteractions() {
   window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { drawHero(); drawLab(); }, 120); });
   window.addEventListener("scroll", () => { const max = document.documentElement.scrollHeight - window.innerHeight; const progress = max ? (window.scrollY / max) * 100 : 0; const bar = $("#scroll-progress"); if (bar) bar.style.width = `${progress}%`; }, { passive: true });
   $("#theme-toggle")?.addEventListener("click", () => {
-    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    const current = document.documentElement.dataset.theme || "light";
+    const next = current === "light" ? "dark" : "light";
     applyTheme(next);
     drawHero();
     drawLab();
