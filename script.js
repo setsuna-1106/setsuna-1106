@@ -50,6 +50,7 @@ let lastFrame = performance.now();
 let activeModule = "oscillator";
 let taskFilter = "all";
 let pendulumTrail = [];
+let walkPaths = null;
 let heroVisible = true;
 let labVisible = true;
 
@@ -65,8 +66,12 @@ function resizeCanvas(canvas) {
   const scale = window.devicePixelRatio || 1;
   const width = Math.max(300, Math.floor(rect.width));
   const height = Math.max(220, Math.floor(rect.height));
-  canvas.width = Math.floor(width * scale);
-  canvas.height = Math.floor(height * scale);
+  const pixelWidth = Math.floor(width * scale);
+  const pixelHeight = Math.floor(height * scale);
+  if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+    canvas.width = pixelWidth;
+    canvas.height = pixelHeight;
+  }
   const ctx = canvas.getContext("2d");
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   return { width, height, ctx };
@@ -227,40 +232,110 @@ function drawLabOscillator(ctx, width, height) {
   ctx.fillText("x(t)", right - 28, originY - amp - 12);
 }
 
-function drawLabWalk(ctx, width, height) {
-  const centerX = width * .5;
-  const centerY = height * .5;
-  ctx.strokeStyle = inkAxis(.4);
-  ctx.beginPath();
-  ctx.moveTo(24, centerY);
-  ctx.lineTo(width - 24, centerY);
-  ctx.moveTo(centerX, 18);
-  ctx.lineTo(centerX, height - 18);
-  ctx.stroke();
-  for (let path = 0; path < 5; path += 1) {
-    ctx.strokeStyle = path === 4 ? themeColors().yellow : colorWithAlpha(themeColors().mint, .18 + path * .1);
-    ctx.lineWidth = path === 4 ? 2 : 1;
-    ctx.beginPath();
-    let x = centerX;
-    let y = centerY;
-    ctx.moveTo(x, y);
-    for (let i = 0; i < 120; i += 1) {
-      const angle = Math.sin(i * 1.73 + path * 2.1) * Math.PI;
-      const step = 1.5 + (Math.sin(i * .29 + path) + 1) * 1.6;
-      x += Math.cos(angle) * step;
-      y += Math.sin(angle) * step;
-      ctx.lineTo(x, y);
+function createWalkPaths() {
+  let seed = 1106;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
+  const paths = [];
+  for (let path = 0; path < 7; path += 1) {
+    let x = 0;
+    let y = 0;
+    const points = [{ x, y }];
+    for (let step = 0; step < 180; step += 1) {
+      const angle = Math.floor(random() * 8) * (Math.PI / 4);
+      x += Math.cos(angle);
+      y += Math.sin(angle);
+      points.push({ x, y });
     }
+    paths.push(points);
+  }
+  return paths;
+}
+
+function drawLabWalk(ctx, width, height) {
+  if (!walkPaths) walkPaths = createWalkPaths();
+  const colors = themeColors();
+  const totalSteps = walkPaths[0].length - 1;
+  const cycle = reducedMotion ? 1 : 8;
+  const progress = reducedMotion ? 1 : (time % cycle) / cycle;
+  const visibleSteps = Math.max(12, Math.floor(progress * totalSteps));
+  const extent = Math.max(...walkPaths.flat().map((point) => Math.max(Math.abs(point.x), Math.abs(point.y)))) + 3;
+  const cameraExtent = Math.min(extent, Math.max(12, 2 + 1.8 * Math.sqrt(visibleSteps)));
+  const scale = Math.min((width - 56) / (cameraExtent * 2), (height - 72) / (cameraExtent * 2));
+  const centerX = width * .5;
+  const centerY = height * .53;
+  const toCanvas = (point) => ({ x: centerX + point.x * scale, y: centerY - point.y * scale });
+
+  ctx.strokeStyle = inkAxis(.28);
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(24, centerY); ctx.lineTo(width - 24, centerY);
+  ctx.moveTo(centerX, 22); ctx.lineTo(centerX, height - 34);
+  ctx.stroke();
+
+  for (let tick = -20; tick <= 20; tick += 5) {
+    const x = centerX + tick * scale;
+    const y = centerY - tick * scale;
+    ctx.strokeStyle = colorWithAlpha(colors.line, .4);
+    ctx.beginPath();
+    ctx.moveTo(x, centerY - 4); ctx.lineTo(x, centerY + 4);
+    ctx.moveTo(centerX - 4, y); ctx.lineTo(centerX + 4, y);
     ctx.stroke();
   }
-  const marker = (time * 18) % 120;
-  ctx.fillStyle = themeColors().red;
+
+  walkPaths.forEach((pathPoints, pathIndex) => {
+    const points = pathPoints.slice(0, visibleSteps + 1);
+    const isMainPath = pathIndex === 0;
+    ctx.strokeStyle = isMainPath ? colors.mint : colorWithAlpha(colors.blue, .18 + pathIndex * .025);
+    ctx.lineWidth = isMainPath ? 2.2 : 1.1;
+    ctx.beginPath();
+    points.forEach((point, pointIndex) => {
+      const screenPoint = toCanvas(point);
+      if (pointIndex === 0) ctx.moveTo(screenPoint.x, screenPoint.y);
+      else ctx.lineTo(screenPoint.x, screenPoint.y);
+    });
+    ctx.stroke();
+
+    if (!isMainPath && points.length > 1) {
+      const endpoint = toCanvas(points[points.length - 1]);
+      ctx.fillStyle = colorWithAlpha(colors.blue, .55);
+      ctx.beginPath();
+      ctx.arc(endpoint.x, endpoint.y, 2.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+
+  const mainPoint = toCanvas(walkPaths[0][visibleSteps]);
+  ctx.save();
+  ctx.shadowColor = colors.yellow;
+  ctx.shadowBlur = 12;
+  ctx.fillStyle = colors.yellow;
   ctx.beginPath();
-  ctx.arc(centerX + Math.cos(marker * 1.73) * marker * .8, centerY + Math.sin(marker * 1.73) * marker * .8, 4, 0, Math.PI * 2);
+  ctx.arc(mainPoint.x, mainPoint.y, 4.5, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = themeColors().muted;
+  ctx.restore();
+
+  ctx.fillStyle = colors.muted;
   ctx.font = "700 11px SFMono-Regular, Menlo, monospace";
-  ctx.fillText("RMS / SAMPLE PATHS", 26, 30);
+  ctx.fillText("RANDOM WALK / 7 SAMPLE PATHS", 24, 28);
+  ctx.fillText("ORIGIN", centerX + 8, centerY - 9);
+  ctx.fillText("x", width - 26, centerY - 9);
+  ctx.fillText("y", centerX + 8, 34);
+
+  const rms = Math.sqrt(walkPaths.reduce((sum, pathPoints) => {
+    const point = pathPoints[visibleSteps];
+    return sum + point.x ** 2 + point.y ** 2;
+  }, 0) / walkPaths.length);
+  const rmsNode = $("#lab-value-a");
+  const stepsNode = $("#lab-value-b");
+  const stateNode = $("#lab-value-c");
+  if (activeModule === "walk") {
+    if (rmsNode) rmsNode.textContent = `RMS ${rms.toFixed(2)}`;
+    if (stepsNode) stepsNode.textContent = `STEPS ${visibleSteps}`;
+    if (stateNode) stateNode.textContent = visibleSteps >= totalSteps ? "COMPLETE" : "SAMPLING";
+  }
 }
 
 function drawLabPendulum(ctx, width, height) {
@@ -315,6 +390,7 @@ function updatePlayButton(button, running, label) {
 function setActiveModule(module) {
   activeModule = module;
   pendulumTrail = [];
+  if (module === "walk" && !walkPaths) walkPaths = createWalkPaths();
   const meta = moduleMeta[module];
   $$("[data-module]").forEach((button) => button.classList.toggle("is-active", button.dataset.module === module));
   const method = $("#lab-method");
@@ -372,7 +448,7 @@ function bindInteractions() {
       new IntersectionObserver((entries) => { setter(entries[0].isIntersecting); }, { threshold: 0 }).observe(canvas);
     };
     watchCanvas("#oscillator", (visible) => { heroVisible = visible; });
-    watchCanvas("#lab-canvas", (visible) => { labVisible = visible; if (visible && !reducedMotion) drawLab(); });
+    watchCanvas("#lab-canvas", (visible) => { labVisible = visible; if (visible && labRunning && !reducedMotion) drawLab(); });
   }
 }
 
