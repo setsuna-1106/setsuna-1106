@@ -14,12 +14,14 @@ try {
 } catch (error) {}
 
 const tasks = [
-  { title: "完善 ODE / nonlinear oscillations 笔记", area: "Notes", status: "doing", detail: "继续整理 Euler、RK2、RK4、阻尼振子与非线性振子的相位误差和稳定性观察。" },
-  { title: "给随机行走加入更多可视化", area: "Simulation", status: "open", detail: "补充自回避行走、均方位移、扩散距离和多样本统计分布图。" },
-  { title: "整理 spontaneous decay 文档", area: "Notes", status: "open", detail: "把离散衰变模拟和指数近似的对照写成项目说明。" },
-  { title: "补充球内反射模块说明", area: "Simulation", status: "open", detail: "说明光线在球内反射的几何假设、边界处理和可视化输出方式。" },
+  { title: "扩展 Fourier 分析与 DFT 实现", area: "Notes", status: "doing", detail: "DFT 已落地，继续补频谱实验和 Python 频域可视化对照。" },
+  { title: "MCM 模板赛前实战演练", area: "Modeling", status: "doing", detail: "13 个模块指南文档已齐，开赛前用真题把 TOPSIS、优化和预测模板串成完整解题链路。" },
+  { title: "受扰阻尼摆数据对照分析", area: "Simulation", status: "open", detail: "RK4 + CSV 输出已就绪，补充 Euler / RK4 误差对照和能量漂移曲线。" },
+  { title: "给 slog 补导出与统计增强", area: "Tooling", status: "open", detail: "在 review / stats 基础上增加周报导出与学习时长统计。" },
   { title: "细化教材转换流程页面", area: "Workflow", status: "doing", detail: "把 PDF 解析、术语统一、LaTeX 重建和最终校对拆成可复用步骤。" },
   { title: "给 Obsidian 插件补使用场景", area: "Tooling", status: "open", detail: "补充长文档阅读、教材复习和文件浏览器进度提示的实际用例。" },
+  { title: "完善 ODE / nonlinear oscillations 笔记", area: "Notes", status: "done", detail: "Euler、RK2、RK4 与阻尼振子的相位误差、稳定性观察已整理进 c4phy 笔记。" },
+  { title: "统一 c4phy 工程化构建", area: "Engineering", status: "done", detail: "16 个项目全部接入统一 Makefile，命名规范与 C/C++、Python 工作流手册已落地。" },
 ];
 
 const moduleMeta = {
