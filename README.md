@@ -1,31 +1,27 @@
 # 你好，我是 告文 👋
 
-**Physics undergraduate @ Nanjing University** · computational physics & scientific computing
+**南京大学物理系本科生** · 计算物理 & 科学计算
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=22&pause=1200&color=58A6FF&center=true&vCenter=true&random=false&width=620&lines=Simulating+the+world%2C+one+line+of+C+at+a+time;Computational+physics+%C2%B7+scientific+computing;Keep+the+log%2C+keep+the+physics.)](https://github.com/setsuna-1106)
-
-- 🎓 物理系本科生（大二），走学术路线，目标出国读研
-- 🔭 Currently: training for an upcoming **mathematical-modeling contest** — I do the modeling, in Python
-- 🌱 Learning: **computational physics in C**, modern C++, Rust
-- 📖 Coursework: Electromagnetism · Optics · Modern Physics · …
-- 🧰 Daily drivers: Neovim (hand-rolled Lua config) · Obsidian · zsh
-- 📫 Reach me: **zhang.haomin1106@gmail.com**
-- 🏠 [My homepage](https://setsuna-1106.github.io/setsuna-1106/) — under construction 🚧
+- 🌱 正在学习：计算物理（C）、C++、Rust
+- 📖 在上的课：电磁学 · 光学 · 近代物理 · …
+- 🧰 常用工具：Neovim（手写 Lua 配置）· Obsidian · zsh
+- 📫 联系我：**zhang.haomin1106@gmail.com**
+- 🏠 [个人主页](https://setsuna-1106.github.io/setsuna-1106/)（建设中 🚧）
 
 ---
 
-## 🧪 Projects
+## 🧪 项目
 
-| Repo | What it is |
+| 仓库 | 简介 |
 |---|---|
-| [**c4phy**](https://github.com/setsuna-1106/c4phy) | 🧮 My computational-physics lab notebook: notes + C/C++ numerical codes (error analysis, quadrature, data fitting, matrix computing, Monte Carlo, ODEs & nonlinear oscillations) with Python / Raylib / SDL2 visualizations |
-| [**slog**](https://github.com/setsuna-1106/slog) | 📓 Zero-dependency, single-file Python CLI that keeps my learning log as one plain-Markdown file per day — six fixed sections, one command |
-| [**chinese-to-english-textbook**](https://github.com/setsuna-1106/chinese-to-english-textbook) | 📚 A 5-stage pipeline (Claude Code skill) that converts Chinese STEM textbook PDFs into publication-quality English LaTeX PDFs in the Cambridge/OUP style |
-| [**obsidian-pdf-reading-progress**](https://github.com/setsuna-1106/obsidian-pdf-reading-progress) | 📖 Obsidian plugin that auto-tracks PDF reading progress — progress bars in the file explorer, stats in the status bar, a reading list panel |
-| [**MCMCode**](https://github.com/setsuna-1106/MCMCode) | 🏆 Code base for mathematical-modeling contests: models, algorithms and simulations in Python |
+| [**c4phy**](https://github.com/setsuna-1106/c4phy) | 🧮 计算物理学习仓库：笔记 + C/C++ 数值代码（误差分析、数值积分、数据拟合、矩阵计算、蒙特卡洛、微分方程与非线性振荡），配 Python / Raylib / SDL2 可视化 |
+| [**slog**](https://github.com/setsuna-1106/slog) | 📓 零依赖单文件 Python CLI：每天一个纯 Markdown 学习日志，六大固定板块，一条命令 |
+| [**chinese-to-english-textbook**](https://github.com/setsuna-1106/chinese-to-english-textbook) | 📚 五阶段流水线（Claude Code skill）：把中文 STEM 教材 PDF 转成剑桥 / 牛津大学出版社风格的英文 LaTeX PDF |
+| [**obsidian-pdf-reading-progress**](https://github.com/setsuna-1106/obsidian-pdf-reading-progress) | 📖 Obsidian 插件：自动追踪 PDF 阅读进度——文件列表进度条、状态栏统计、阅读列表面板 |
+| [**MCMCode**](https://github.com/setsuna-1106/MCMCode) | 🏆 数学建模代码库：Python 建模、算法与仿真 |
 
 <details>
-<summary>🛠️ Languages & tools</summary>
+<summary>🛠️ 语言与工具</summary>
 <br>
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
@@ -35,7 +31,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=flat-square&logo=lua&logoColor=white)
 ![Markdown](https://img.shields.io/badge/Markdown-000000?style=flat-square&logo=markdown&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-learning-DEA584?style=flat-square&logo=rust&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-DEA584?style=flat-square&logo=rust&logoColor=white)
 
 ![Neovim](https://img.shields.io/badge/Neovim-57A143?style=flat-square&logo=neovim&logoColor=white)
 ![Obsidian](https://img.shields.io/badge/Obsidian-7C3AED?style=flat-square&logo=obsidian&logoColor=white)
@@ -48,16 +44,4 @@
 
 ---
 
-## 📊 GitHub stats
-
-<p align="center">
-  <img height="160" src="https://github-readme-stats.vercel.app/api?username=setsuna-1106&show_icons=true&count_private=true&hide_border=true&theme=transparent" alt="GitHub stats" />
-  <img height="160" src="https://github-readme-stats.vercel.app/api/top-langs/?username=setsuna-1106&layout=compact&hide_border=true&theme=transparent&langs_count=8" alt="Top languages" />
-</p>
-<p align="center">
-  <img height="150" src="https://streak-stats.demolab.com?user=setsuna-1106&hide_border=true&theme=transparent&locale=en" alt="GitHub streak" />
-</p>
-
----
-
-> ⚡ *Study logs are plain Markdown, physics is plain C — data outlives tools.*
+> ⚡ *日志是纯 Markdown，物理是纯 C——数据比工具活得久。*
