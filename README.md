@@ -2,7 +2,7 @@
 
 **南京大学物理系本科生** · 计算物理 & 科学计算
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=22&pause=1200&color=58A6FF&center=false&vCenter=true&random=false&width=560&lines=Simulating+the+world%2C+one+line+of+C+at+a+time;Computational+physics+%C2%B7+scientific+computing;Keep+the+log%2C+keep+the+physics.)](https://github.com/setsuna-1106)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=22&pause=1200&color=58A6FF&center=false&vCenter=true&random=false&width=640&lines=Simulating+the+world%2C+one+line+of+C+at+a+time;Computational+physics+%C2%B7+scientific+computing;Keep+the+log%2C+keep+the+physics.)](https://github.com/setsuna-1106)
 
 - 🌱 正在学习：计算物理（C）、C++、Rust
 - 📖 在上的课：电磁学 · 光学 · 近代物理 · …
