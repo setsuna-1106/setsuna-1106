@@ -48,4 +48,4 @@
 
 ---
 
-> ⚡ *日志是纯 Markdown，物理是纯 C——数据比工具活得久。*
+> *Whereof one cannot speak, thereof one must be silent*
