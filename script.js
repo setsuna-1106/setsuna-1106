@@ -1,518 +1,250 @@
-document.documentElement.classList.add("js-ready");
+"use strict";
 
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const THEME_KEY = "setsuna-theme";
-function applyTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  try { localStorage.setItem(THEME_KEY, theme); } catch (error) {}
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+const data = window.portfolioData;
+const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+const escapeHTML = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const repoURL = (name) => `https://github.com/setsuna-1106/${encodeURIComponent(name)}`;
+const icons = () => window.lucide?.createIcons({ attrs: { "aria-hidden": "true" } });
+function buttonIcon(id, name, label) {
+  const button = $(id);
+  button.innerHTML = `<i data-lucide="${name}"></i>`;
+  button.title = label;
+  button.setAttribute("aria-label", label);
+  icons();
+}
+
+function renderProjects(category = "all") {
+  const projects = data.projects.filter((p) => category === "all" || p.category === category);
+  const colors = { C: "#657b82", Python: "#b08d36", TypeScript: "#367fb4", TeX: "#618d52", "C++": "#c35b70", CSS: "#8e6aa6" };
+  $("#project-grid").innerHTML = projects.map((p) => {
+    const content = `<div class="project-top"><i data-lucide="${p.icon}"></i><span>${p.featured ? "FEATURED / 01" : "OPEN SOURCE"}</span></div><h3><a href="${repoURL(p.name)}">${escapeHTML(p.title)}</a></h3><p class="project-subtitle">${escapeHTML(p.subtitle)}</p><p class="project-description">${escapeHTML(p.description)}</p><div class="project-tags">${p.tags.map((tag) => `<span>${escapeHTML(tag)}</span>`).join("")}</div><div class="project-footer"><span class="language" style="--language-color:${colors[p.language]}">${escapeHTML(p.language)}</span><a class="text-link" href="${repoURL(p.name)}">查看项目 <i data-lucide="arrow-up-right"></i></a></div>`;
+    return `<article class="project-card${p.featured ? " featured" : ""}">${p.featured ? `<div class="project-body">${content}</div><figure class="project-art"><img src="assets/random-walk.png" width="360" height="260" alt="c4phy 随机行走与扩散笔记中的原始图示"><figcaption><span>RANDOM WALK / DIFFUSION</span><span>FIG. 02</span></figcaption></figure>` : content}</article>`;
+  }).join("");
+  $("#result-count").textContent = `${projects.length} 个项目`;
+  icons();
+}
+$$('[data-filter]').forEach((button) => button.addEventListener("click", () => {
+  $$('[data-filter]').forEach((b) => { const selected = b === button; b.classList.toggle("is-active", selected); b.setAttribute("aria-pressed", selected); });
+  renderProjects(button.dataset.filter);
+}));
+
+let repositories = data.repositories;
+let sourceLabel = `GitHub 快照 · ${data.snapshotDate}`;
+function renderActivity() {
+  $("#activity-list").innerHTML = [...repositories].sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at)).slice(0, 4).map((repo) => {
+    const project = data.projects.find((p) => p.name === repo.name);
+    return `<a class="activity-row" href="${repoURL(repo.name)}"><time datetime="${escapeHTML(repo.pushed_at)}">${repo.pushed_at.slice(0, 10)}</time><span><strong>${escapeHTML(repo.name)}</strong><small>${escapeHTML(project?.subtitle || repo.language || "公开仓库")}</small></span><i data-lucide="arrow-up-right"></i></a>`;
+  }).join("");
+  $("#repo-count").textContent = repositories.length;
+  $("#star-count").textContent = repositories.reduce((sum, r) => sum + r.stars, 0);
+  $("#sync-status").textContent = sourceLabel;
+  icons();
+}
+function validRepositories(value) {
+  return Array.isArray(value) && value.length > 0 && value.every((r) => typeof r.name === "string" && /^[\w.-]+$/.test(r.name) && Number.isInteger(r.stars) && r.stars >= 0 && typeof r.pushed_at === "string" && Number.isFinite(Date.parse(r.pushed_at)));
+}
+async function refreshGithub() {
+  const button = $("#refresh-github");
+  button.disabled = true;
+  $("#sync-status").textContent = "正在读取 GitHub…";
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const collected = [];
+    for (let page = 1; page <= 10; page++) {
+      const response = await fetch(`https://api.github.com/users/setsuna-1106/repos?per_page=100&page=${page}`, { signal: controller.signal, headers: { Accept: "application/vnd.github+json" } });
+      if (!response.ok) throw new Error(`GitHub ${response.status}`);
+      const batch = await response.json();
+      if (!Array.isArray(batch)) throw new Error("Invalid response");
+      collected.push(...batch);
+      if (batch.length < 100) break;
+      if (page === 10) throw new Error("Incomplete repository list");
+    }
+    const next = collected.map((r) => ({ name: r.name, language: r.language, stars: r.stargazers_count, pushed_at: r.pushed_at }));
+    if (!validRepositories(next)) throw new Error("Invalid repository data");
+    repositories = next;
+    const at = Date.now();
+    sourceLabel = `GitHub 已同步 · ${new Date(at).toLocaleDateString("sv-SE")}`;
+    try { localStorage.setItem("setsuna-repositories-v1", JSON.stringify({ at, repositories })); } catch (_) {}
+    renderActivity();
+  } catch (_) {
+    $("#sync-status").textContent = `暂时无法连接 · ${sourceLabel}`;
+  } finally { clearTimeout(timeout); button.disabled = false; }
 }
 try {
-  const saved = localStorage.getItem(THEME_KEY);
-  if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
-} catch (error) {}
-
-const tasks = [
-  { title: "扩展 Fourier 分析与 DFT 实现", area: "Notes", status: "doing", detail: "DFT 已落地，继续补频谱实验和 Python 频域可视化对照。" },
-  { title: "MCM 模板赛前实战演练", area: "Modeling", status: "doing", detail: "13 个模块指南文档已齐，开赛前用真题把 TOPSIS、优化和预测模板串成完整解题链路。" },
-  { title: "受扰阻尼摆数据对照分析", area: "Simulation", status: "open", detail: "RK4 + CSV 输出已就绪，补充 Euler / RK4 误差对照和能量漂移曲线。" },
-  { title: "给 slog 补导出与统计增强", area: "Tooling", status: "open", detail: "在 review / stats 基础上增加周报导出与学习时长统计。" },
-  { title: "细化教材转换流程页面", area: "Workflow", status: "doing", detail: "把 PDF 解析、术语统一、LaTeX 重建和最终校对拆成可复用步骤。" },
-  { title: "给 Obsidian 插件补使用场景", area: "Tooling", status: "open", detail: "补充长文档阅读、教材复习和文件浏览器进度提示的实际用例。" },
-  { title: "完善 ODE / nonlinear oscillations 笔记", area: "Notes", status: "done", detail: "Euler、RK2、RK4 与阻尼振子的相位误差、稳定性观察已整理进 c4phy 笔记。" },
-  { title: "统一 c4phy 工程化构建", area: "Engineering", status: "done", detail: "16 个项目全部接入统一 Makefile，命名规范与 C/C++、Python 工作流手册已落地。" },
-];
-
-const moduleMeta = {
-  oscillator: {
-    title: "DAMPED OSCILLATOR",
-    method: "EULER / RK FAMILY",
-    detail: "用阻尼振子检验步长、相位误差、能量衰减和数值稳定性。",
-    values: ["PHASE 1.42", "STEPS 128", "STABLE"],
-  },
-  walk: {
-    title: "RANDOM WALK",
-    method: "MONTE CARLO",
-    detail: "随机行走与扩散距离统计连接概率模型、模拟和可视化。",
-    values: ["RMS 4.82", "SAMPLES 240", "SAMPLING"],
-  },
-  pendulum: {
-    title: "DOUBLE PENDULUM",
-    method: "NONLINEAR ODE",
-    detail: "用相位轨迹观察非线性系统对初值误差的敏感性。",
-    values: ["CHAOS 0.78", "STEPS 512", "SENSITIVE"],
-  },
-};
-
-let heroRunning = !reducedMotion;
-let labRunning = !reducedMotion;
-let time = 0;
-let lastFrame = performance.now();
-let activeModule = "oscillator";
-let taskFilter = "all";
-let pendulumTrail = [];
-let walkPaths = null;
-let heroVisible = true;
-let labVisible = true;
-
-const heroControls = {
-  canvas: $("#oscillator"),
-  damping: $("#damping"),
-  frequency: $("#frequency"),
-};
-
-function resizeCanvas(canvas) {
-  if (!canvas) return { width: 0, height: 0 };
-  const rect = canvas.getBoundingClientRect();
-  const scale = window.devicePixelRatio || 1;
-  const width = Math.max(300, Math.floor(rect.width));
-  const height = Math.max(220, Math.floor(rect.height));
-  const pixelWidth = Math.floor(width * scale);
-  const pixelHeight = Math.floor(height * scale);
-  if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
-    canvas.width = pixelWidth;
-    canvas.height = pixelHeight;
+  const cache = JSON.parse(localStorage.getItem("setsuna-repositories-v1"));
+  if (cache && Number.isFinite(cache.at) && cache.at <= Date.now() && cache.at >= Date.parse(data.snapshotDate) && validRepositories(cache.repositories)) {
+    repositories = cache.repositories;
+    sourceLabel = `GitHub 缓存 · ${new Date(cache.at).toLocaleDateString("sv-SE")}`;
   }
+} catch (_) {}
+$("#refresh-github").addEventListener("click", refreshGithub);
+
+let palette;
+function updatePalette() {
+  const css = getComputedStyle(document.documentElement);
+  palette = Object.fromEntries(["bg", "surface", "line", "ink", "muted", "accent", "coral"].map((key) => [key, css.getPropertyValue(`--${key}`).trim()]));
+}
+function syncThemeButton() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  buttonIcon("#theme-toggle", dark ? "sun" : "moon", dark ? "切换浅色主题" : "切换深色主题");
+  $('meta[name="theme-color"]').content = dark ? "#171b19" : "#fafbf9";
+}
+$("#theme-toggle").addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("setsuna-theme", next); } catch (_) {}
+  syncThemeButton(); updatePalette(); drawHero(); drawLab();
+});
+function setMenu(open) {
+  $("#navigation").classList.toggle("is-open", open);
+  $("#menu-toggle").setAttribute("aria-expanded", open);
+  buttonIcon("#menu-toggle", open ? "x" : "menu", open ? "收起导航" : "展开导航");
+}
+$("#menu-toggle").addEventListener("click", () => setMenu($("#menu-toggle").getAttribute("aria-expanded") !== "true"));
+$("#navigation").addEventListener("click", (event) => { if (event.target.closest("a")) setMenu(false); });
+document.addEventListener("keydown", (event) => { if (event.key === "Escape") setMenu(false); });
+document.addEventListener("click", (event) => { if (!event.target.closest(".site-header")) setMenu(false); });
+
+const dialog = $("#image-dialog");
+$$('[data-lightbox]').forEach((link) => link.addEventListener("click", (event) => {
+  if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  $("#dialog-image").src = link.href;
+  $("#dialog-image").alt = link.querySelector("img").alt;
+  $("#image-caption").textContent = link.dataset.caption;
+  dialog.showModal(); document.body.classList.add("dialog-open");
+}));
+$("#close-dialog").addEventListener("click", () => dialog.close());
+dialog.addEventListener("close", () => document.body.classList.remove("dialog-open"));
+dialog.addEventListener("click", (event) => { if (event.target !== dialog) return; const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); });
+
+// Exact underdamped solution for x(0)=1, v(0)=0; all slider values satisfy gamma < omega.
+function oscillator(t, gamma, omega) {
+  const wd = Math.sqrt(omega * omega - gamma * gamma);
+  const decay = Math.exp(-gamma * t);
+  const x = decay * (Math.cos(wd * t) + gamma / wd * Math.sin(wd * t));
+  const v = -decay * omega * omega / wd * Math.sin(wd * t);
+  return { x, v, energy: (v * v + omega * omega * x * x) / (omega * omega) };
+}
+function canvasContext(id) {
+  const canvas = $(id);
+  const { width, height } = canvas.getBoundingClientRect();
+  const ratio = Math.min(devicePixelRatio || 1, 2);
+  if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) { canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio); }
   const ctx = canvas.getContext("2d");
-  ctx.setTransform(scale, 0, 0, scale, 0, 0);
-  return { width, height, ctx };
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  return { ctx, width, height };
 }
-
-function themeColors() {
-  const styles = getComputedStyle(document.documentElement);
-  return {
-    canvasBg: styles.getPropertyValue("--canvas-bg").trim() || "#202a35",
-    ink: styles.getPropertyValue("--ink").trim() || "#20252b",
-    muted: styles.getPropertyValue("--muted").trim(),
-    line: styles.getPropertyValue("--line").trim() || "#394348",
-    blue: styles.getPropertyValue("--blue").trim() || "#3158d7",
-    red: styles.getPropertyValue("--red").trim() || "#d95e4d",
-    mint: styles.getPropertyValue("--mint").trim() || "#b9ddd0",
-    yellow: styles.getPropertyValue("--yellow").trim() || "#f0ca55",
-  };
-}
-
-function colorWithAlpha(hex, alpha) {
-  const value = hex.replace("#", "");
-  const number = parseInt(value, 16);
-  return `rgba(${(number >> 16) & 255}, ${(number >> 8) & 255}, ${number & 255}, ${alpha})`;
-}
-
-function drawGrid(ctx, width, height, gap = 30) {
-  const { canvasBg, line } = themeColors();
-  ctx.fillStyle = canvasBg;
-  ctx.fillRect(0, 0, width, height);
-  ctx.strokeStyle = colorWithAlpha(line, .34);
-  ctx.lineWidth = 1;
-  for (let x = 0; x <= width; x += gap) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, height);
-    ctx.stroke();
-  }
-  for (let y = 0; y <= height; y += gap) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(width, y);
-    ctx.stroke();
-  }
-}
-
-function oscillatorValue(t, gamma, omega) {
-  return Math.exp(-gamma * t) * Math.cos(omega * t);
-}
-
-function inkAxis(alpha) {
-  const ink = themeColors().ink;
-  const n = parseInt(ink.slice(1), 16);
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
-}
-
+let heroTime = 0;
+let labTime = 0;
+let heroRunning = !motionPreference.matches;
+let labRunning = !motionPreference.matches;
+let heroVisible = true;
+let labVisible = false;
+let view = "displacement";
 function drawHero() {
-  const canvas = heroControls.canvas;
-  const damping = heroControls.damping;
-  const frequency = heroControls.frequency;
-  if (!canvas || !damping || !frequency) return;
-  const { width, height, ctx } = resizeCanvas(canvas);
-  const gamma = Number(damping.value);
-  const omega = Number(frequency.value);
-  const originY = height * .48;
-  const left = 34;
-  const right = width - 24;
-  const amp = Math.min(100, height * .3);
-
-  drawGrid(ctx, width, height, 30);
-  ctx.strokeStyle = inkAxis(.66);
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(left, originY);
-  ctx.lineTo(right, originY);
-  ctx.stroke();
-
-  const samples = Math.max(180, Math.floor(width * .7));
-  ctx.strokeStyle = themeColors().mint;
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  for (let i = 0; i < samples; i += 1) {
-    const u = i / (samples - 1);
-    const x = left + u * (right - left);
-    const y = originY - oscillatorValue(u * 16, gamma, omega) * amp;
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-
-  ctx.strokeStyle = themeColors().red;
-  ctx.lineWidth = 1;
-  ctx.setLineDash([6, 7]);
-  for (const sign of [1, -1]) {
+  const { ctx, width, height } = canvasContext("#hero-canvas");
+  const mobile = width <= 600;
+  const left = mobile ? 30 : width * .59;
+  const right = mobile ? width - 30 : width * .94;
+  const top = mobile ? height - 256 : 54;
+  const bottom = mobile ? height - 105 : height - 165;
+  const cx = (left + right) / 2, cy = (top + bottom) / 2;
+  const sx = (right - left) * .41, sy = (bottom - top) * .43;
+  ctx.strokeStyle = palette.line; ctx.lineWidth = .7;
+  for (let x = left; x <= right; x += 29) { ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke(); }
+  for (let y = top; y <= bottom; y += 29) { ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke(); }
+  ctx.strokeStyle = palette.muted; ctx.globalAlpha = .45;
+  ctx.beginPath(); ctx.moveTo(left, cy); ctx.lineTo(right, cy); ctx.moveTo(cx, top); ctx.lineTo(cx, bottom); ctx.stroke(); ctx.globalAlpha = 1;
+  const point = (t, gamma) => { const state = oscillator(t, gamma, 1.5); return [cx + state.x * sx, cy - state.v / 1.5 * sy]; };
+  [0.065, 0.13, 0.24].forEach((gamma, index) => {
+    ctx.strokeStyle = index === 0 ? palette.accent : index === 1 ? palette.coral : palette.muted;
+    ctx.globalAlpha = index === 0 ? .9 : .37; ctx.lineWidth = index === 0 ? 1.6 : 1;
     ctx.beginPath();
-    for (let i = 0; i < samples; i += 1) {
-      const u = i / (samples - 1);
-      const x = left + u * (right - left);
-      const y = originY - sign * Math.exp(-gamma * u * 16) * amp;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  }
-  ctx.setLineDash([]);
-
-  const phase = (time % 16) / 16;
-  const dotX = left + phase * (right - left);
-  const dotY = originY - oscillatorValue(phase * 16, gamma, omega) * amp;
-  ctx.save();
-  ctx.shadowColor = themeColors().yellow;
-  ctx.shadowBlur = 18;
-  ctx.fillStyle = themeColors().yellow;
-  ctx.beginPath();
-  ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-  ctx.strokeStyle = colorWithAlpha(themeColors().yellow, .58);
-  ctx.setLineDash([3, 5]);
-  ctx.beginPath();
-  ctx.moveTo(dotX, dotY);
-  ctx.lineTo(dotX, height - 25);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  ctx.fillStyle = themeColors().muted;
-  ctx.font = "700 10px SFMono-Regular, Menlo, monospace";
-  ctx.fillText("AMPLITUDE", left, height - 14);
-  ctx.fillText("t", right - 7, originY - 10);
-  const energy = Math.exp(-gamma * ((time % 16) * .8));
-  const gammaNode = $("#hero-gamma");
-  const omegaNode = $("#hero-omega");
-  const energyNode = $("#hero-energy");
-  if (gammaNode) gammaNode.textContent = gamma.toFixed(2);
-  if (omegaNode) omegaNode.textContent = omega.toFixed(1);
-  if (energyNode) energyNode.textContent = energy.toFixed(2);
-}
-
-function drawLabOscillator(ctx, width, height) {
-  const originY = height * .5;
-  const left = 28;
-  const right = width - 24;
-  const amp = Math.min(110, height * .3);
-  ctx.strokeStyle = inkAxis(.5);
-  ctx.beginPath();
-  ctx.moveTo(left, originY);
-  ctx.lineTo(right, originY);
-  ctx.stroke();
-  ctx.strokeStyle = themeColors().mint;
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  for (let i = 0; i < 260; i += 1) {
-    const u = i / 259;
-    const x = left + u * (right - left);
-    const y = originY - oscillatorValue(u * 17 + time * .25, .04, 1.4) * amp;
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-  ctx.fillStyle = themeColors().yellow;
-  ctx.font = "700 11px SFMono-Regular, Menlo, monospace";
-  ctx.fillText("x(t)", right - 28, originY - amp - 12);
-}
-
-function createWalkPaths() {
-  let seed = 1106;
-  const random = () => {
-    seed = (seed * 1664525 + 1013904223) >>> 0;
-    return seed / 4294967296;
-  };
-  const paths = [];
-  for (let path = 0; path < 7; path += 1) {
-    let x = 0;
-    let y = 0;
-    const points = [{ x, y }];
-    for (let step = 0; step < 180; step += 1) {
-      const angle = Math.floor(random() * 8) * (Math.PI / 4);
-      x += Math.cos(angle);
-      y += Math.sin(angle);
-      points.push({ x, y });
-    }
-    paths.push(points);
-  }
-  return paths;
-}
-
-function drawLabWalk(ctx, width, height) {
-  if (!walkPaths) walkPaths = createWalkPaths();
-  const colors = themeColors();
-  const totalSteps = walkPaths[0].length - 1;
-  const cycle = reducedMotion ? 1 : 8;
-  const progress = reducedMotion ? 1 : (time % cycle) / cycle;
-  const visibleSteps = Math.max(12, Math.floor(progress * totalSteps));
-  const extent = Math.max(...walkPaths.flat().map((point) => Math.max(Math.abs(point.x), Math.abs(point.y)))) + 3;
-  const cameraExtent = Math.min(extent, Math.max(12, 2 + 1.8 * Math.sqrt(visibleSteps)));
-  const scale = Math.min((width - 56) / (cameraExtent * 2), (height - 72) / (cameraExtent * 2));
-  const centerX = width * .5;
-  const centerY = height * .53;
-  const toCanvas = (point) => ({ x: centerX + point.x * scale, y: centerY - point.y * scale });
-
-  ctx.strokeStyle = inkAxis(.28);
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(24, centerY); ctx.lineTo(width - 24, centerY);
-  ctx.moveTo(centerX, 22); ctx.lineTo(centerX, height - 34);
-  ctx.stroke();
-
-  for (let tick = -20; tick <= 20; tick += 5) {
-    const x = centerX + tick * scale;
-    const y = centerY - tick * scale;
-    ctx.strokeStyle = colorWithAlpha(colors.line, .4);
-    ctx.beginPath();
-    ctx.moveTo(x, centerY - 4); ctx.lineTo(x, centerY + 4);
-    ctx.moveTo(centerX - 4, y); ctx.lineTo(centerX + 4, y);
-    ctx.stroke();
-  }
-
-  walkPaths.forEach((pathPoints, pathIndex) => {
-    const points = pathPoints.slice(0, visibleSteps + 1);
-    const isMainPath = pathIndex === 0;
-    ctx.strokeStyle = isMainPath ? colors.mint : colorWithAlpha(colors.blue, .18 + pathIndex * .025);
-    ctx.lineWidth = isMainPath ? 2.2 : 1.1;
-    ctx.beginPath();
-    points.forEach((point, pointIndex) => {
-      const screenPoint = toCanvas(point);
-      if (pointIndex === 0) ctx.moveTo(screenPoint.x, screenPoint.y);
-      else ctx.lineTo(screenPoint.x, screenPoint.y);
-    });
-    ctx.stroke();
-
-    if (!isMainPath && points.length > 1) {
-      const endpoint = toCanvas(points[points.length - 1]);
-      ctx.fillStyle = colorWithAlpha(colors.blue, .55);
-      ctx.beginPath();
-      ctx.arc(endpoint.x, endpoint.y, 2.4, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    for (let i = 0; i <= 700; i++) { const [x, y] = point(i / 700 * 29, gamma); if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+    ctx.stroke(); ctx.globalAlpha = 1;
   });
-
-  const mainPoint = toCanvas(walkPaths[0][visibleSteps]);
-  ctx.save();
-  ctx.shadowColor = colors.yellow;
-  ctx.shadowBlur = 12;
-  ctx.fillStyle = colors.yellow;
-  ctx.beginPath();
-  ctx.arc(mainPoint.x, mainPoint.y, 4.5, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-
-  ctx.fillStyle = colors.muted;
-  ctx.font = "700 11px SFMono-Regular, Menlo, monospace";
-  ctx.fillText("RANDOM WALK / 7 SAMPLE PATHS", 24, 28);
-  ctx.fillText("ORIGIN", centerX + 8, centerY - 9);
-  ctx.fillText("x", width - 26, centerY - 9);
-  ctx.fillText("y", centerX + 8, 34);
-
-  const rms = Math.sqrt(walkPaths.reduce((sum, pathPoints) => {
-    const point = pathPoints[visibleSteps];
-    return sum + point.x ** 2 + point.y ** 2;
-  }, 0) / walkPaths.length);
-  const rmsNode = $("#lab-value-a");
-  const stepsNode = $("#lab-value-b");
-  const stateNode = $("#lab-value-c");
-  if (activeModule === "walk") {
-    if (rmsNode) rmsNode.textContent = `RMS ${rms.toFixed(2)}`;
-    if (stepsNode) stepsNode.textContent = `STEPS ${visibleSteps}`;
-    if (stateNode) stateNode.textContent = visibleSteps >= totalSteps ? "COMPLETE" : "SAMPLING";
-  }
+  const [x, y] = point(heroTime % 29, .065);
+  ctx.fillStyle = palette.accent; ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI); ctx.fill();
+  ctx.fillStyle = palette.muted; ctx.font = "10px monospace"; ctx.fillText("x", right + 7, cy + 3); ctx.fillText("v", cx + 7, top - 7);
 }
-
-function drawLabPendulum(ctx, width, height) {
-  const originX = width * .5;
-  const originY = Math.min(78, height * .22);
-  const armOne = Math.min(110, height * .3);
-  const armTwo = Math.min(120, height * .34);
-  const angleOne = Math.sin(time * .9) * .72;
-  const angleTwo = Math.sin(time * 1.67 + .8) * .9;
-  const x1 = originX + Math.sin(angleOne) * armOne;
-  const y1 = originY + Math.cos(angleOne) * armOne;
-  const x2 = x1 + Math.sin(angleTwo) * armTwo;
-  const y2 = y1 + Math.cos(angleTwo) * armTwo;
-  pendulumTrail.push({ x: x2, y: y2 });
-  if (pendulumTrail.length > 160) pendulumTrail.shift();
-  ctx.strokeStyle = colorWithAlpha(themeColors().red, .6);
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  pendulumTrail.forEach((point, index) => { if (index === 0) ctx.moveTo(point.x, point.y); else ctx.lineTo(point.x, point.y); });
-  ctx.stroke();
-  ctx.strokeStyle = themeColors().mint;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(originX, originY); ctx.lineTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-  ctx.fillStyle = themeColors().yellow;
-  ctx.beginPath(); ctx.arc(x1, y1, 7, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = themeColors().red;
-  ctx.beginPath(); ctx.arc(x2, y2, 9, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = themeColors().muted;
-  ctx.font = "700 11px SFMono-Regular, Menlo, monospace";
-  ctx.fillText("SENSITIVE INITIAL CONDITIONS", 24, height - 22);
-}
-
 function drawLab() {
-  const canvas = $("#lab-canvas");
-  if (!canvas) return;
-  const { width, height, ctx } = resizeCanvas(canvas);
-  drawGrid(ctx, width, height, 32);
-  if (activeModule === "walk") drawLabWalk(ctx, width, height);
-  else if (activeModule === "pendulum") drawLabPendulum(ctx, width, height);
-  else drawLabOscillator(ctx, width, height);
-}
-
-function updatePlayButton(button, running, label) {
-  if (!button) return;
-  button.setAttribute("aria-label", running ? `Pause ${label}` : `Play ${label}`);
-  button.setAttribute("title", running ? `Pause ${label}` : `Play ${label}`);
-  const icon = $("span", button);
-  if (icon) icon.textContent = running ? "II" : ">";
-}
-
-function setActiveModule(module) {
-  activeModule = module;
-  pendulumTrail = [];
-  if (module === "walk" && !walkPaths) walkPaths = createWalkPaths();
-  const meta = moduleMeta[module];
-  $$("[data-module]").forEach((button) => button.classList.toggle("is-active", button.dataset.module === module));
-  const method = $("#lab-method");
-  const title = $("#lab-module-title");
-  const detail = $("#lab-module-detail");
-  if (method) method.textContent = meta.method;
-  if (title) title.textContent = meta.title;
-  if (detail) detail.textContent = meta.detail;
-  meta.values.forEach((value, index) => { const node = $("#lab-value-" + String.fromCharCode(97 + index)); if (node) node.textContent = value; });
-  drawLab();
-}
-
-function updateTaskStats() {
-  const counts = tasks.reduce((result, task) => { result.total += 1; result[task.status] += 1; return result; }, { total: 0, done: 0, doing: 0, open: 0 });
-  const completion = counts.total ? Math.round((counts.done / counts.total) * 100) : 0;
-  ["total", "doing", "open", "done"].forEach((key) => { const node = $("#task-" + key); if (node) node.textContent = counts[key]; });
-  const percent = $("#task-percent");
-  const bar = $("#task-meter-bar");
-  if (percent) percent.textContent = `${completion}%`;
-  if (bar) bar.style.width = `${completion}%`;
-}
-
-function escapeHtml(value) {
-  return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-}
-
-function renderTasks() {
-  const list = $("#task-list");
-  if (!list) return;
-  const visible = taskFilter === "all" ? tasks : tasks.filter((task) => task.status === taskFilter);
-  list.innerHTML = visible.length ? visible.map((task) => `<article class="task-row"><div class="task-row-main"><h3>${escapeHtml(task.title)}</h3><p>${escapeHtml(task.detail)}</p></div><div class="task-row-status" data-status="${escapeHtml(task.status)}">${escapeHtml(task.status)}</div><div class="task-row-meta">${escapeHtml(task.area)}</div></article>`).join("") : `<p class="empty-state">当前筛选下没有任务。</p>`;
-}
-
-function bindInteractions() {
-  $("#play-sim")?.addEventListener("click", () => { heroRunning = !heroRunning; updatePlayButton($("#play-sim"), heroRunning, "simulation"); });
-  $("#lab-play")?.addEventListener("click", () => { labRunning = !labRunning; updatePlayButton($("#lab-play"), labRunning, "laboratory animation"); });
-  $("#damping")?.addEventListener("input", drawHero);
-  $("#frequency")?.addEventListener("input", drawHero);
-  $$(`[data-module]`).forEach((button) => button.addEventListener("click", () => setActiveModule(button.dataset.module)));
-  $$(`[data-task-filter]`).forEach((button) => button.addEventListener("click", () => { taskFilter = button.dataset.taskFilter; $$(`[data-task-filter]`).forEach((item) => item.classList.toggle("is-active", item === button)); renderTasks(); }));
-  let resizeTimer = 0;
-  window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { drawHero(); drawLab(); }, 120); });
-  window.addEventListener("scroll", () => { const max = document.documentElement.scrollHeight - window.innerHeight; const progress = max ? (window.scrollY / max) * 100 : 0; const bar = $("#scroll-progress"); if (bar) bar.style.width = `${progress}%`; }, { passive: true });
-  $("#theme-toggle")?.addEventListener("click", () => {
-    const current = document.documentElement.dataset.theme || "light";
-    const next = current === "light" ? "dark" : "light";
-    applyTheme(next);
-    drawHero();
-    drawLab();
-  });
-  if ("IntersectionObserver" in window) {
-    const watchCanvas = (selector, setter) => {
-      const canvas = $(selector);
-      if (!canvas) return;
-      new IntersectionObserver((entries) => { setter(entries[0].isIntersecting); }, { threshold: 0 }).observe(canvas);
-    };
-    watchCanvas("#oscillator", (visible) => { heroVisible = visible; });
-    watchCanvas("#lab-canvas", (visible) => { labVisible = visible; if (visible && labRunning && !reducedMotion) drawLab(); });
+  const { ctx, width, height } = canvasContext("#lab-canvas");
+  const gamma = Number($("#damping").value), omega = Number($("#frequency").value);
+  const left = 44, right = width - 24, top = 22, bottom = height - 34;
+  const cy = (top + bottom) / 2;
+  const map = (t) => { const s = oscillator(t, gamma, omega); return view === "phase" ? [left + (s.x + 1.15) / 2.3 * (right - left), cy - s.v / (omega * 1.15) * (bottom - top) / 2] : [left + t / 20 * (right - left), cy - s.x / 1.15 * (bottom - top) / 2]; };
+  ctx.font = "10px monospace"; ctx.lineWidth = 1; ctx.fillStyle = palette.muted;
+  for (let i = 0; i <= 4; i++) {
+    const x = left + i / 4 * (right - left);
+    ctx.strokeStyle = palette.line; ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke();
+    ctx.fillText(view === "phase" ? (-1 + i * .5).toFixed(1) : String(i * 5), x - 7, bottom + 20);
   }
-}
-
-function setupLiveRepoCount() {
-  const node = $("#fact-repos");
-  if (!node) return;
-  const CACHE_KEY = "setsuna-repo-count";
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-  let cached = null;
-  try { cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null"); } catch (error) {}
-  if (cached && Date.now() - cached.at < ONE_DAY) {
-    if (Number.isFinite(cached.count)) node.textContent = String(cached.count).padStart(2, "0");
-    return;
+  for (let i = -1; i <= 1; i++) {
+    const y = cy - i / 1.15 * (bottom - top) / 2;
+    ctx.strokeStyle = palette.line; ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke();
+    ctx.fillText(String(view === "phase" ? (i * omega).toFixed(1) : i), 10, y + 4);
   }
-  fetch("https://api.github.com/users/setsuna-1106")
-    .then((response) => { if (!response.ok) throw new Error(response.status); return response.json(); })
-    .then((data) => {
-      const count = data.public_repos;
-      if (!Number.isFinite(count)) return;
-      node.textContent = String(count).padStart(2, "0");
-      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), count })); } catch (error) {}
-    })
-    .catch(() => {});
+  ctx.fillText(view === "phase" ? "v / m/s" : "x / m", left, 13);
+  ctx.fillText(view === "phase" ? "x / m" : "t / s", right - 24, height - 3);
+  const path = (end) => { ctx.beginPath(); for (let i = 0; i <= 600; i++) { const [x, y] = map(i / 600 * end); if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.stroke(); };
+  ctx.strokeStyle = palette.accent; ctx.globalAlpha = .2; ctx.lineWidth = 1.4; path(20); ctx.globalAlpha = 1;
+  ctx.lineWidth = 2; path(labTime);
+  const [x, y] = map(labTime); ctx.fillStyle = palette.coral; ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2); ctx.fill();
+  const state = oscillator(labTime, gamma, omega);
+  $("#time-value").textContent = labTime.toFixed(2);
+  $("#position-value").textContent = state.x.toFixed(2);
+  $("#velocity-value").textContent = state.v.toFixed(2);
+  $("#energy-value").textContent = state.energy.toFixed(2);
 }
-
-function setupReveal() {
-  const items = $$(`[data-reveal]`);
-  if (!("IntersectionObserver" in window) || reducedMotion) { items.forEach((item) => item.classList.add("is-visible")); return; }
-  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("is-visible"); observer.unobserve(entry.target); } }), { threshold: .12, rootMargin: "0px 0px -8%" });
-  items.forEach((item) => observer.observe(item));
+function updatePlayButtons() {
+  buttonIcon("#hero-play", heroRunning ? "pause" : "play", heroRunning ? "暂停相轨迹" : "播放相轨迹");
+  buttonIcon("#lab-play", labRunning ? "pause" : "play", labRunning ? "暂停实验" : "播放实验");
 }
-
-function setupNav() {
-  const links = $$(".nav-links a");
-  const sections = links.map((link) => document.getElementById(link.getAttribute("href").slice(1))).filter(Boolean);
-  if (!("IntersectionObserver" in window)) return;
-  const clearAtTop = () => { if (window.scrollY < 180) links.forEach((link) => link.classList.remove("is-current")); };
-  const observer = new IntersectionObserver((entries) => { const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]; if (visible) links.forEach((link) => link.classList.toggle("is-current", link.getAttribute("href") === `#${visible.target.id}`)); clearAtTop(); }, { rootMargin: "-30% 0px -58%", threshold: [.1, .35, .7] });
-  sections.forEach((section) => observer.observe(section));
-  window.addEventListener("scroll", clearAtTop, { passive: true });
-  clearAtTop();
+$("#hero-play").addEventListener("click", () => { heroRunning = !heroRunning; updatePlayButtons(); });
+$("#lab-play").addEventListener("click", () => { labRunning = !labRunning; updatePlayButtons(); });
+$("#lab-reset").addEventListener("click", () => { labTime = 0; drawLab(); });
+function updateParameters(custom = true) {
+  if (custom) $("#preset").value = "custom";
+  $("#damping-value").textContent = Number($("#damping").value).toFixed(2);
+  $("#frequency-value").textContent = Number($("#frequency").value).toFixed(2);
+  labTime = 0; drawLab();
 }
+["#damping", "#frequency"].forEach((id) => $(id).addEventListener("input", () => updateParameters()));
+$("#preset").addEventListener("change", () => { const [gamma, omega] = { light: [.18, 1.5], free: [0, 1.5], strong: [.7, 1.5] }[$("#preset").value]; $("#damping").value = gamma; $("#frequency").value = omega; updateParameters(false); });
+$$('[data-view]').forEach((button) => button.addEventListener("click", () => {
+  view = button.dataset.view;
+  $$('[data-view]').forEach((b) => { b.classList.toggle("is-active", b === button); b.setAttribute("aria-pressed", b === button); });
+  $("#lab-canvas").setAttribute("aria-label", view === "phase" ? "阻尼振子的位移与速度相轨迹" : "阻尼振子的位移随时间变化曲线"); drawLab();
+}));
 
+if ("IntersectionObserver" in window) {
+  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.target.id === "hero-canvas") heroVisible = entry.isIntersecting; else labVisible = entry.isIntersecting; }));
+  observer.observe($("#hero-canvas")); observer.observe($("#lab-canvas"));
+} else labVisible = true;
+let previousFrame = performance.now();
 function frame(now) {
-  const delta = Math.min(.05, (now - lastFrame) / 1000);
-  lastFrame = now;
-  if ((heroRunning && heroVisible) || (labRunning && labVisible)) time += delta * 1.8;
-  if (heroRunning && heroVisible) drawHero();
-  if (labRunning && labVisible) drawLab();
-  window.matchMedia("(prefers-color-scheme: light)").addEventListener?.("change", () => { drawHero(); drawLab(); });
-requestAnimationFrame(frame);
+  const delta = Math.min((now - previousFrame) / 1000, .05); previousFrame = now;
+  if (!document.hidden) {
+    if (heroRunning && heroVisible) { heroTime += delta * 1.5; drawHero(); }
+    if (labRunning && labVisible) { labTime = (labTime + delta) % 20; drawLab(); }
+  }
+  requestAnimationFrame(frame);
 }
-
-updatePlayButton($("#play-sim"), heroRunning, "simulation");
-updatePlayButton($("#lab-play"), labRunning, "laboratory animation");
-updateTaskStats();
-renderTasks();
-setActiveModule("oscillator");
-bindInteractions();
-setupReveal();
-setupNav();
-setupLiveRepoCount();
-drawHero();
-drawLab();
-requestAnimationFrame(frame);
+motionPreference.addEventListener("change", () => { heroRunning = !motionPreference.matches; labRunning = !motionPreference.matches; updatePlayButtons(); });
+new ResizeObserver(() => { drawHero(); drawLab(); }).observe(document.body);
+const navLinks = $$("#navigation a");
+let navScheduled = false;
+function updateNav() {
+  let current = "";
+  navLinks.forEach((link) => { if ($(link.getAttribute("href")).getBoundingClientRect().top <= 180) current = link.hash; });
+  navLinks.forEach((link) => { const selected = link.hash === current; link.classList.toggle("is-current", selected); if (selected) link.setAttribute("aria-current", "location"); else link.removeAttribute("aria-current"); });
+  navScheduled = false;
+}
+window.addEventListener("scroll", () => { if (!navScheduled) { navScheduled = true; requestAnimationFrame(updateNav); } }, { passive: true });
+$("#year").textContent = new Date().getFullYear();
+renderProjects(); renderActivity(); updatePalette(); syncThemeButton(); updatePlayButtons(); drawHero(); drawLab(); updateNav(); requestAnimationFrame(frame);
