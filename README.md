@@ -8,7 +8,7 @@
 - 📖 在上的课：电磁学 · 光学 · 近代物理 · …
 - 🧰 常用工具：Neovim（手写 Lua 配置）· Obsidian · zsh
 - 📫 联系我：**zhang.haomin1106@gmail.com**
-- 🏠 [个人主页](https://setsuna-1106.github.io/setsuna-1106/)（建设中 🚧）
+- 🏠 [个人主页](https://setsuna-1106.github.io/setsuna-1106/)
 
 > **English:** Physics undergraduate at Nanjing University, focused on computational physics & scientific computing. Learning numerical methods in C, plus C++ and Rust. I turn my study workflow into small tools — e.g. [slog](https://github.com/setsuna-1106/slog), a zero-dependency Markdown learning-log CLI — and keep everything as plain text. 📫 zhang.haomin1106@gmail.com · 🏠 [homepage](https://setsuna-1106.github.io/setsuna-1106/)
 

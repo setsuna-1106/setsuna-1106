@@ -1,9 +1,8 @@
 "use strict";
-
+(() => {
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
 const data = window.portfolioData;
-const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
 const escapeHTML = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const repoURL = (name) => `https://github.com/setsuna-1106/${encodeURIComponent(name)}`;
 const icons = () => window.lucide?.createIcons({ attrs: { "aria-hidden": "true" } });
@@ -82,11 +81,6 @@ try {
 } catch (_) {}
 $("#refresh-github").addEventListener("click", refreshGithub);
 
-let palette;
-function updatePalette() {
-  const css = getComputedStyle(document.documentElement);
-  palette = Object.fromEntries(["bg", "surface", "line", "ink", "muted", "accent", "coral"].map((key) => [key, css.getPropertyValue(`--${key}`).trim()]));
-}
 function syncThemeButton() {
   const dark = document.documentElement.dataset.theme === "dark";
   buttonIcon("#theme-toggle", dark ? "sun" : "moon", dark ? "切换浅色主题" : "切换深色主题");
@@ -96,7 +90,7 @@ $("#theme-toggle").addEventListener("click", () => {
   const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   document.documentElement.dataset.theme = next;
   try { localStorage.setItem("setsuna-theme", next); } catch (_) {}
-  syncThemeButton(); updatePalette(); drawHero(); drawLab();
+  syncThemeButton(); document.dispatchEvent(new Event("themechange"));
 });
 function setMenu(open) {
   $("#navigation").classList.toggle("is-open", open);
@@ -106,7 +100,8 @@ function setMenu(open) {
 $("#menu-toggle").addEventListener("click", () => setMenu($("#menu-toggle").getAttribute("aria-expanded") !== "true"));
 $("#navigation").addEventListener("click", (event) => { if (event.target.closest("a")) setMenu(false); });
 document.addEventListener("keydown", (event) => { if (event.key === "Escape") setMenu(false); });
-document.addEventListener("click", (event) => { if (!event.target.closest(".site-header")) setMenu(false); });
+// Icon replacement can detach the click target; the original event path stays valid.
+document.addEventListener("click", (event) => { if (!event.composedPath().includes($(".site-header"))) setMenu(false); });
 
 const dialog = $("#image-dialog");
 $$('[data-lightbox]').forEach((link) => link.addEventListener("click", (event) => {
@@ -121,122 +116,6 @@ $("#close-dialog").addEventListener("click", () => dialog.close());
 dialog.addEventListener("close", () => document.body.classList.remove("dialog-open"));
 dialog.addEventListener("click", (event) => { if (event.target !== dialog) return; const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); });
 
-// Exact underdamped solution for x(0)=1, v(0)=0; all slider values satisfy gamma < omega.
-function oscillator(t, gamma, omega) {
-  const wd = Math.sqrt(omega * omega - gamma * gamma);
-  const decay = Math.exp(-gamma * t);
-  const x = decay * (Math.cos(wd * t) + gamma / wd * Math.sin(wd * t));
-  const v = -decay * omega * omega / wd * Math.sin(wd * t);
-  return { x, v, energy: (v * v + omega * omega * x * x) / (omega * omega) };
-}
-function canvasContext(id) {
-  const canvas = $(id);
-  const { width, height } = canvas.getBoundingClientRect();
-  const ratio = Math.min(devicePixelRatio || 1, 2);
-  if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) { canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio); }
-  const ctx = canvas.getContext("2d");
-  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-  ctx.clearRect(0, 0, width, height);
-  return { ctx, width, height };
-}
-let heroTime = 0;
-let labTime = 0;
-let heroRunning = !motionPreference.matches;
-let labRunning = !motionPreference.matches;
-let heroVisible = true;
-let labVisible = false;
-let view = "displacement";
-function drawHero() {
-  const { ctx, width, height } = canvasContext("#hero-canvas");
-  const mobile = width <= 600;
-  const left = mobile ? 30 : width * .59;
-  const right = mobile ? width - 30 : width * .94;
-  const top = mobile ? height - 256 : 54;
-  const bottom = mobile ? height - 105 : height - 165;
-  const cx = (left + right) / 2, cy = (top + bottom) / 2;
-  const sx = (right - left) * .41, sy = (bottom - top) * .43;
-  ctx.strokeStyle = palette.line; ctx.lineWidth = .7;
-  for (let x = left; x <= right; x += 29) { ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke(); }
-  for (let y = top; y <= bottom; y += 29) { ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke(); }
-  ctx.strokeStyle = palette.muted; ctx.globalAlpha = .45;
-  ctx.beginPath(); ctx.moveTo(left, cy); ctx.lineTo(right, cy); ctx.moveTo(cx, top); ctx.lineTo(cx, bottom); ctx.stroke(); ctx.globalAlpha = 1;
-  const point = (t, gamma) => { const state = oscillator(t, gamma, 1.5); return [cx + state.x * sx, cy - state.v / 1.5 * sy]; };
-  [0.065, 0.13, 0.24].forEach((gamma, index) => {
-    ctx.strokeStyle = index === 0 ? palette.accent : index === 1 ? palette.coral : palette.muted;
-    ctx.globalAlpha = index === 0 ? .9 : .37; ctx.lineWidth = index === 0 ? 1.6 : 1;
-    ctx.beginPath();
-    for (let i = 0; i <= 700; i++) { const [x, y] = point(i / 700 * 29, gamma); if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
-    ctx.stroke(); ctx.globalAlpha = 1;
-  });
-  const [x, y] = point(heroTime % 29, .065);
-  ctx.fillStyle = palette.accent; ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI); ctx.fill();
-  ctx.fillStyle = palette.muted; ctx.font = "10px monospace"; ctx.fillText("x", right + 7, cy + 3); ctx.fillText("v", cx + 7, top - 7);
-}
-function drawLab() {
-  const { ctx, width, height } = canvasContext("#lab-canvas");
-  const gamma = Number($("#damping").value), omega = Number($("#frequency").value);
-  const left = 44, right = width - 24, top = 22, bottom = height - 34;
-  const cy = (top + bottom) / 2;
-  const map = (t) => { const s = oscillator(t, gamma, omega); return view === "phase" ? [left + (s.x + 1.15) / 2.3 * (right - left), cy - s.v / (omega * 1.15) * (bottom - top) / 2] : [left + t / 20 * (right - left), cy - s.x / 1.15 * (bottom - top) / 2]; };
-  ctx.font = "10px monospace"; ctx.lineWidth = 1; ctx.fillStyle = palette.muted;
-  for (let i = 0; i <= 4; i++) {
-    const x = left + i / 4 * (right - left);
-    ctx.strokeStyle = palette.line; ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke();
-    ctx.fillText(view === "phase" ? (-1 + i * .5).toFixed(1) : String(i * 5), x - 7, bottom + 20);
-  }
-  for (let i = -1; i <= 1; i++) {
-    const y = cy - i / 1.15 * (bottom - top) / 2;
-    ctx.strokeStyle = palette.line; ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke();
-    ctx.fillText(String(view === "phase" ? (i * omega).toFixed(1) : i), 10, y + 4);
-  }
-  ctx.fillText(view === "phase" ? "v / m/s" : "x / m", left, 13);
-  ctx.fillText(view === "phase" ? "x / m" : "t / s", right - 24, height - 3);
-  const path = (end) => { ctx.beginPath(); for (let i = 0; i <= 600; i++) { const [x, y] = map(i / 600 * end); if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.stroke(); };
-  ctx.strokeStyle = palette.accent; ctx.globalAlpha = .2; ctx.lineWidth = 1.4; path(20); ctx.globalAlpha = 1;
-  ctx.lineWidth = 2; path(labTime);
-  const [x, y] = map(labTime); ctx.fillStyle = palette.coral; ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2); ctx.fill();
-  const state = oscillator(labTime, gamma, omega);
-  $("#time-value").textContent = labTime.toFixed(2);
-  $("#position-value").textContent = state.x.toFixed(2);
-  $("#velocity-value").textContent = state.v.toFixed(2);
-  $("#energy-value").textContent = state.energy.toFixed(2);
-}
-function updatePlayButtons() {
-  buttonIcon("#hero-play", heroRunning ? "pause" : "play", heroRunning ? "暂停相轨迹" : "播放相轨迹");
-  buttonIcon("#lab-play", labRunning ? "pause" : "play", labRunning ? "暂停实验" : "播放实验");
-}
-$("#hero-play").addEventListener("click", () => { heroRunning = !heroRunning; updatePlayButtons(); });
-$("#lab-play").addEventListener("click", () => { labRunning = !labRunning; updatePlayButtons(); });
-$("#lab-reset").addEventListener("click", () => { labTime = 0; drawLab(); });
-function updateParameters(custom = true) {
-  if (custom) $("#preset").value = "custom";
-  $("#damping-value").textContent = Number($("#damping").value).toFixed(2);
-  $("#frequency-value").textContent = Number($("#frequency").value).toFixed(2);
-  labTime = 0; drawLab();
-}
-["#damping", "#frequency"].forEach((id) => $(id).addEventListener("input", () => updateParameters()));
-$("#preset").addEventListener("change", () => { const [gamma, omega] = { light: [.18, 1.5], free: [0, 1.5], strong: [.7, 1.5] }[$("#preset").value]; $("#damping").value = gamma; $("#frequency").value = omega; updateParameters(false); });
-$$('[data-view]').forEach((button) => button.addEventListener("click", () => {
-  view = button.dataset.view;
-  $$('[data-view]').forEach((b) => { b.classList.toggle("is-active", b === button); b.setAttribute("aria-pressed", b === button); });
-  $("#lab-canvas").setAttribute("aria-label", view === "phase" ? "阻尼振子的位移与速度相轨迹" : "阻尼振子的位移随时间变化曲线"); drawLab();
-}));
-
-if ("IntersectionObserver" in window) {
-  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.target.id === "hero-canvas") heroVisible = entry.isIntersecting; else labVisible = entry.isIntersecting; }));
-  observer.observe($("#hero-canvas")); observer.observe($("#lab-canvas"));
-} else labVisible = true;
-let previousFrame = performance.now();
-function frame(now) {
-  const delta = Math.min((now - previousFrame) / 1000, .05); previousFrame = now;
-  if (!document.hidden) {
-    if (heroRunning && heroVisible) { heroTime += delta * 1.5; drawHero(); }
-    if (labRunning && labVisible) { labTime = (labTime + delta) % 20; drawLab(); }
-  }
-  requestAnimationFrame(frame);
-}
-motionPreference.addEventListener("change", () => { heroRunning = !motionPreference.matches; labRunning = !motionPreference.matches; updatePlayButtons(); });
-new ResizeObserver(() => { drawHero(); drawLab(); }).observe(document.body);
 const navLinks = $$("#navigation a");
 let navScheduled = false;
 function updateNav() {
@@ -247,4 +126,5 @@ function updateNav() {
 }
 window.addEventListener("scroll", () => { if (!navScheduled) { navScheduled = true; requestAnimationFrame(updateNav); } }, { passive: true });
 $("#year").textContent = new Date().getFullYear();
-renderProjects(); renderActivity(); updatePalette(); syncThemeButton(); updatePlayButtons(); drawHero(); drawLab(); updateNav(); requestAnimationFrame(frame);
+renderProjects(); renderActivity(); syncThemeButton(); updateNav();
+})();
