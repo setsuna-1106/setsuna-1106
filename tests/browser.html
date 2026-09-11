@@ -1,0 +1,65 @@
+<!doctype html><meta charset="utf-8"><title>Notebook browser checks</title>
+<style>body{font:16px system-ui;margin:24px}iframe{height:960px;border:1px solid;display:block}pre{white-space:pre-wrap}</style>
+<h1>Notebook browser checks</h1><pre id="results">Running…</pre><div id="stage"></div>
+<script>
+(async()=>{
+  const result=document.querySelector('#results'), stage=document.querySelector('#stage'), reports=[];
+  const html=await (await fetch('../index.html')).text(), css=await (await fetch('../assets/css/site.css')).text();
+  const delay=ms=>new Promise(r=>setTimeout(r,ms));
+  const assert=(value,label)=>{if(!value)throw Error(label); reports.push('PASS '+label);result.textContent=reports.join('\n');};
+  async function fixture({dark=false,reduced=false,stored=null,blocked=false,width=1440}={}) {
+    stage.replaceChildren(); const frame=document.createElement('iframe'); frame.style.width=width+'px';stage.append(frame);
+    const setup=`<script>
+      const settings=${JSON.stringify({dark,reduced,stored,blocked})};
+      const entries=new Map(settings.stored?[['setsuna-theme',settings.stored]]:[]);
+      Object.defineProperty(window,'localStorage',{value:{getItem:k=>{if(settings.blocked)throw Error('unavailable');return entries.get(k)||null},setItem:(k,v)=>{if(settings.blocked)throw Error('unavailable');entries.set(k,v)},removeItem:k=>entries.delete(k)}});
+      const realMedia=window.matchMedia.bind(window); const media=new Map();
+      window.matchMedia=q=>{if(!/prefers-(color-scheme|reduced-motion)/.test(q))return realMedia(q);if(!media.has(q)){const m=new EventTarget();m.matches=q.includes('color-scheme')?settings.dark:settings.reduced;m.media=q;media.set(q,m)}return media.get(q)};
+      window.changePreference=(q,value)=>{const m=matchMedia(q);m.matches=value;m.dispatchEvent(new Event('change'))};
+      window.testErrors=[];window.addEventListener('error',e=>testErrors.push(e.message));
+    <\/script>`;
+    // Force the CSS branches alongside the test's OS-preference stub.
+    const themedCSS=css.replaceAll('../fonts/','assets/fonts/').replaceAll('(prefers-color-scheme: dark)',dark?'(min-width: 0px)':'(max-width: 0px)').replaceAll('(prefers-reduced-motion: reduce)',reduced?'(min-width: 0px)':'(max-width: 0px)');
+    frame.srcdoc=html.replace('<head>','<head><base href="'+new URL('../',location.href)+'">'+setup).replace(/<link rel="stylesheet"[^>]+>/, '<style>'+themedCSS+'</style>');
+    await new Promise(r=>frame.onload=r); await frame.contentDocument.fonts.ready; await delay(150);
+    return {d:frame.contentDocument,w:frame.contentWindow};
+  }
+  try {
+    let {d,w}=await fixture();
+    assert(d.fonts.check('18px "Notebook Hand"'),'local handwritten font loaded');
+    assert(d.querySelectorAll('.project-card').length===7,'seven projects render');
+    assert(d.querySelectorAll('.note-item:not([hidden])').length===1,'one active notebook page');
+    d.querySelector('#note-next').click();assert(d.querySelector('#note-page').textContent==='02 / 03','next notebook page');
+    d.querySelector('#note-next').click();assert(d.querySelector('#note-next').disabled,'last-page boundary');
+    d.querySelector('#note-prev').click();assert(d.querySelector('#note-page').textContent==='02 / 03','previous notebook page');
+    d.querySelector('[data-filter="physics"]').click();assert(d.querySelectorAll('.project-card').length===2,'project category filtering');
+    for(const model of ['wave','orbit','oscillator']){d.querySelector('[data-model="'+model+'"]').click();assert(d.querySelector('#experiment-panel').getAttribute('aria-labelledby')==='tab-'+model,model+' model switch');}
+    const resources=w.performance.getEntriesByType('resource').length;
+    d.querySelector('#theme-toggle').click();assert(d.documentElement.dataset.theme==='dark','manual dark theme');
+    await delay(850);assert(w.performance.getEntriesByType('resource').length===resources,'theme switch makes no new resource requests');
+    d.querySelector('#theme-toggle').click();d.querySelector('#theme-toggle').click();assert(d.documentElement.dataset.theme==='dark','rapid theme toggles');
+    d.querySelector('#skip-transition').click();assert(!d.querySelector('.theme-transition').classList.contains('is-active'),'skip theme animation');
+    assert(w.localStorage.getItem('setsuna-theme')==='dark','choice saved');
+    d.querySelector('#theme-system').click();assert(!d.documentElement.dataset.theme && w.localStorage.getItem('setsuna-theme')===null,'return to system preference');
+    assert(w.testErrors.length===0,'no runtime exceptions');
+    ({d,w}=await fixture({dark:true,reduced:true,width:375}));
+    assert(w.getComputedStyle(d.documentElement).getPropertyValue('--ink').trim()==='#f7f3e7','system dark CSS carrier');
+    assert(!d.documentElement.dataset.theme,'system default has no saved override');
+    assert(d.querySelector('#theme-toggle').getAttribute('aria-pressed')==='true','system dark button state');
+    d.querySelector('#theme-toggle').click();assert(d.documentElement.dataset.theme==='light','manual light overrides dark system');
+    assert(d.querySelector('#skip-transition').hidden,'reduced motion has no transition');
+    assert([...d.querySelectorAll('.written-char,.turning')].every(el=>w.getComputedStyle(el).animationName==='none'),'reduced motion removes writing/page animations');
+    const before=d.querySelector('#time-value').textContent;d.querySelector('#lab-play').click();await delay(250);assert(d.querySelector('#time-value').textContent===before,'reduced motion keeps experiment static');
+    assert(d.documentElement.scrollWidth<=375,'375px reduced-motion layout');
+    ({d,w}=await fixture({stored:'dark',width:320}));
+    assert(d.documentElement.dataset.theme==='dark','saved preference restored');
+    assert(d.documentElement.scrollWidth<=320,'320px dark layout');
+    ({d,w}=await fixture({blocked:true,width:768}));
+    d.querySelector('#theme-toggle').click();assert(d.documentElement.dataset.theme==='dark','storage failure does not block theme control');
+    assert(d.documentElement.scrollWidth<=768,'768px layout');
+    ({d,w}=await fixture({width:1440}));assert(d.documentElement.scrollWidth<=1440,'1440px layout');
+    assert(w.testErrors.length===0,'final browser fixture has no errors');
+    result.textContent=reports.join('\n')+'\nCOMPLETE: '+reports.length+' checks passed';
+  }catch(error){result.textContent=reports.join('\n')+'\nFAIL: '+error.stack;}
+})();
+</script>

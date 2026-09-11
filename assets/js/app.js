@@ -16,13 +16,13 @@ function buttonIcon(id, name, label) {
 
 function renderProjects(category = "all") {
   const projects = data.projects.filter((p) => category === "all" || p.category === category);
-  const colors = { C: "#657b82", Python: "#b08d36", TypeScript: "#367fb4", TeX: "#618d52", "C++": "#c35b70", CSS: "#8e6aa6" };
   $("#project-grid").innerHTML = projects.map((p) => {
-    const content = `<div class="project-top"><i data-lucide="${p.icon}"></i><span>${p.featured ? "FEATURED / 01" : "OPEN SOURCE"}</span></div><h3><a href="${repoURL(p.name)}">${escapeHTML(p.title)}</a></h3><p class="project-subtitle">${escapeHTML(p.subtitle)}</p><p class="project-description">${escapeHTML(p.description)}</p><div class="project-tags">${p.tags.map((tag) => `<span>${escapeHTML(tag)}</span>`).join("")}</div><div class="project-footer"><span class="language" style="--language-color:${colors[p.language]}">${escapeHTML(p.language)}</span><a class="text-link" href="${repoURL(p.name)}">查看项目 <i data-lucide="arrow-up-right"></i></a></div>`;
+    const content = `<div class="project-top"><i data-lucide="${p.icon}"></i><span>演算 / ${String(data.projects.indexOf(p) + 1).padStart(2, "0")}</span></div><h3><a href="${repoURL(p.name)}">${escapeHTML(p.title)}</a></h3><p class="project-subtitle"><span class="conclusion">${escapeHTML(p.subtitle)}</span></p><p class="project-description">${escapeHTML(p.description)}</p><div class="project-tags">${p.tags.map((tag) => `<span>${escapeHTML(tag)}</span>`).join("")}</div><div class="project-footer"><span class="language">${escapeHTML(p.language)}</span><a class="text-link" href="${repoURL(p.name)}">查看项目 <i data-lucide="arrow-up-right"></i></a></div>`;
     return `<article class="project-card${p.featured ? " featured" : ""}">${p.featured ? `<div class="project-body">${content}</div><figure class="project-art"><img src="assets/random-walk.png" width="360" height="260" alt="c4phy 随机行走与扩散笔记中的原始图示"><figcaption><span>RANDOM WALK / DIFFUSION</span><span>FIG. 02</span></figcaption></figure>` : content}</article>`;
   }).join("");
   $("#result-count").textContent = `${projects.length} 个项目`;
   icons();
+  document.dispatchEvent(new Event("projectsrendered"));
 }
 $$('[data-filter]').forEach((button) => button.addEventListener("click", () => {
   $$('[data-filter]').forEach((b) => { const selected = b === button; b.classList.toggle("is-active", selected); b.setAttribute("aria-pressed", selected); });
@@ -81,16 +81,48 @@ try {
 } catch (_) {}
 $("#refresh-github").addEventListener("click", refreshGithub);
 
-function syncThemeButton() {
-  const dark = document.documentElement.dataset.theme === "dark";
-  buttonIcon("#theme-toggle", dark ? "sun" : "moon", dark ? "切换浅色主题" : "切换深色主题");
-  $('meta[name="theme-color"]').content = dark ? "#171b19" : "#fafbf9";
+const systemTheme = matchMedia("(prefers-color-scheme: dark)");
+function effectiveTheme() {
+  return document.documentElement.dataset.theme || (systemTheme.matches ? "dark" : "light");
 }
-$("#theme-toggle").addEventListener("click", () => {
-  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = next;
-  try { localStorage.setItem("setsuna-theme", next); } catch (_) {}
-  syncThemeButton(); document.dispatchEvent(new Event("themechange"));
+function syncThemeButton() {
+  const dark = effectiveTheme() === "dark";
+  const button = $("#theme-toggle");
+  const label = dark ? "切换到稿纸模式" : "切换到黑板模式";
+  button.innerHTML = `<i data-lucide="${dark ? "sun" : "moon"}"></i><span class="theme-mode-label" aria-hidden="true">${dark ? "稿纸" : "黑板"}</span>`;
+  button.title = label;
+  button.setAttribute("aria-label", label);
+  button.setAttribute("aria-pressed", String(dark));
+  $("#theme-system").hidden = !document.documentElement.dataset.theme;
+  icons();
+  $("meta[name=\"theme-color\"]").content = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+}
+let themeFinish = () => {};
+function switchTheme(next) {
+  themeFinish();
+  const root = document.documentElement;
+  if (next === "system") delete root.dataset.theme;
+  else root.dataset.theme = next;
+  try { next === "system" ? localStorage.removeItem("setsuna-theme") : localStorage.setItem("setsuna-theme", next); } catch (_) {}
+  syncThemeButton();
+  document.dispatchEvent(new Event("themechange"));
+  if (Site.motion.matches) return;
+  const transition = $(".theme-transition"), skip = $("#skip-transition");
+  transition.classList.add("is-active"); skip.hidden = false;
+  let timer;
+  themeFinish = () => { clearTimeout(timer); transition.classList.remove("is-active"); skip.hidden = true; themeFinish = () => {}; };
+  timer = setTimeout(themeFinish, 760);
+}
+$("#theme-toggle").addEventListener("click", () => switchTheme(effectiveTheme() === "dark" ? "light" : "dark"));
+$("#theme-system").addEventListener("click", () => switchTheme("system"));
+$("#skip-transition").addEventListener("click", () => { themeFinish(); $("#theme-toggle").focus(); });
+Site.motion.addEventListener("change", () => { if (Site.motion.matches) themeFinish(); });
+document.addEventListener("keydown", event => { if (event.key === "Escape") themeFinish(); });
+systemTheme.addEventListener("change", () => {
+  if (!document.documentElement.dataset.theme) {
+    syncThemeButton();
+    document.dispatchEvent(new Event("themechange"));
+  }
 });
 function setMenu(open) {
   $("#navigation").classList.toggle("is-open", open);

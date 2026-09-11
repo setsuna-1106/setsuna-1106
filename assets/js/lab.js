@@ -58,7 +58,7 @@
     $("#lab-views").querySelectorAll("button").forEach((button) => button.addEventListener("click", () => { config.view = button.dataset.view; renderViews(); clock.redraw(); }));
     canvas.setAttribute("aria-label", `${config.title}：${config.views.find(([key]) => key === config.view)[1]}`);
     const legend = model === "wave" && config.view === "envelope" ? ["合成波", "振幅包络"] : config.legend;
-    $("#plot-legend").innerHTML = legend.map((label, index) => `<span><i class="legend-swatch swatch-${index}" style="${model === "orbit" && index === 2 ? "background:var(--yellow)" : model === "wave" && config.view === "envelope" && index === 1 ? "background:var(--muted)" : ""}" aria-hidden="true"></i>${label}</span>`).join("");
+    $("#plot-legend").innerHTML = legend.map((label, index) => `<span><i class="legend-swatch swatch-${index}" style="${model === "orbit" && index === 2 ? "background:var(--yellow)" : model === "wave" && config.view === "envelope" && index === 1 ? "background:var(--draft)" : model === "wave" && index === 1 ? "background:var(--accent)" : ""}" aria-hidden="true"></i>${label}</span>`).join("");
   }
   function reset() {
     time = 0;
@@ -83,9 +83,10 @@
     document.querySelectorAll(".telemetry output").forEach((output, index) => { output.textContent = (Math.abs(values[index]) < .005 ? 0 : values[index]).toFixed(2); });
   }
   function path(ctx, count, point, color, width = 1.8, alpha = 1) {
-    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.globalAlpha = alpha; ctx.beginPath();
-    for (let i = 0; i <= count; i++) { const [x, y] = point(i / count); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }
-    ctx.stroke(); ctx.globalAlpha = 1;
+    const samples = Math.min(count, 120);
+    ctx.globalAlpha = alpha;
+    Notebook.curve(canvas, Array.from({length:samples + 1}, (_,i) => point(i / samples)), color, width / 1.8);
+    ctx.globalAlpha = 1;
   }
   function dot(ctx, x, y, color, radius = 4) {
     ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, radius, 0, 2 * Math.PI); ctx.fill();
@@ -94,12 +95,12 @@
     const bounds = { left: 48, right: width - 22, top: 30, bottom: height - 38 };
     const mapX = (x) => bounds.left + (x - rangeX[0]) / (rangeX[1] - rangeX[0]) * (bounds.right - bounds.left);
     const mapY = (y) => bounds.bottom - (y - rangeY[0]) / (rangeY[1] - rangeY[0]) * (bounds.bottom - bounds.top);
-    ctx.font = "10px monospace"; ctx.fillStyle = colors.muted; ctx.lineWidth = 1;
+    ctx.font = "12px monospace"; ctx.fillStyle = colors.muted; ctx.lineWidth = 1;
     for (let i = 0; i <= 4; i++) {
       const x = rangeX[0] + i / 4 * (rangeX[1] - rangeX[0]);
       const y = rangeY[0] + i / 4 * (rangeY[1] - rangeY[0]);
-      ctx.strokeStyle = colors.line; ctx.beginPath(); ctx.moveTo(mapX(x), bounds.top); ctx.lineTo(mapX(x), bounds.bottom); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(bounds.left, mapY(y)); ctx.lineTo(bounds.right, mapY(y)); ctx.stroke();
+      Notebook.curve(canvas, [[mapX(x),bounds.top],[mapX(x),bounds.bottom]],colors.line,.45);
+      Notebook.curve(canvas, [[bounds.left,mapY(y)],[bounds.right,mapY(y)]],colors.line,.45);
       ctx.textAlign = "center"; ctx.fillText(Number(x.toFixed(1)), mapX(x), bounds.bottom + 19);
       ctx.textAlign = "right"; ctx.fillText(Number(y.toFixed(1)), bounds.left - 9, mapY(y) + 3);
     }
@@ -111,8 +112,10 @@
     const [gamma, omega] = current().values, phase = current().view === "phase";
     const { mapX, mapY } = plot(ctx, width, height, phase ? [-1.2, 1.2] : [0, 20], phase ? [-omega * 1.2, omega * 1.2] : [-1.2, 1.2], phase ? "x / m" : "t / s", phase ? "v / m/s" : "x / m", colors);
     const point = (t) => { const state = Physics.oscillator(t, gamma, omega); return [mapX(phase ? state.x : t), mapY(phase ? state.v : state.x)]; };
-    path(ctx, 500, (p) => point(p * 20), colors.accent, 1.2, .22);
-    path(ctx, 500, (p) => point(p * time), colors.accent, 2);
+    ctx.setLineDash([5, 6]);
+    path(ctx, 500, (p) => point(p * 20), colors.draft, 1.2, .7);
+    ctx.setLineDash([]);
+    path(ctx, 500, (p) => point(p * time), colors.ink, 2);
     dot(ctx, ...point(time), colors.coral, 4.5);
     const state = Physics.oscillator(time, gamma, omega);
     telemetry([time, state.x, state.v, state.energy]);
@@ -122,15 +125,17 @@
     const { mapX, mapY } = plot(ctx, width, height, [-6, 6], [-2.4, 2.4], "x / m", "y / m", colors);
     const state = (x) => Physics.wave(x, time, wavelength, phasePi * Math.PI);
     if (current().view === "superposition") {
-      path(ctx, 400, (p) => [mapX(p * 12 - 6), mapY(state(p * 12 - 6).first)], colors.coral, 1.2, .65);
-      path(ctx, 400, (p) => [mapX(p * 12 - 6), mapY(state(p * 12 - 6).second)], colors.muted, 1.2, .65);
+      path(ctx, 400, (p) => [mapX(p * 12 - 6), mapY(state(p * 12 - 6).first)], colors.accent, 1.2);
+      ctx.setLineDash([5, 6]);
+      path(ctx, 400, (p) => [mapX(p * 12 - 6), mapY(state(p * 12 - 6).second)], colors.draft, 1.2);
+      ctx.setLineDash([]);
     } else {
       ctx.setLineDash([4, 5]);
-      for (const sign of [-1, 1]) path(ctx, 400, (p) => [mapX(p * 12 - 6), mapY(sign * state(p * 12 - 6).envelope)], colors.muted, 1, .7);
+      for (const sign of [-1, 1]) path(ctx, 400, (p) => [mapX(p * 12 - 6), mapY(sign * state(p * 12 - 6).envelope)], colors.draft, 1);
       ctx.setLineDash([]);
     }
-    path(ctx, 500, (p) => [mapX(p * 12 - 6), mapY(state(p * 12 - 6).sum)], colors.accent, 2.3);
-    dot(ctx, mapX(0), mapY(state(0).sum), colors.accent);
+    path(ctx, 500, (p) => [mapX(p * 12 - 6), mapY(state(p * 12 - 6).sum)], colors.ink, 2.3);
+    dot(ctx, mapX(0), mapY(state(0).sum), colors.coral);
     telemetry([time, state(0).sum, wavelength, 1 / wavelength]);
   }
   function drawOrbit(ctx, width, height, colors) {
@@ -142,15 +147,15 @@
     const mapY = (y) => centerY - y * scale;
     const point = (t) => { const state = orbitSolution.at(t); return [mapX(state.x), mapY(state.y)]; };
     ctx.strokeStyle = colors.line; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(30, centerY); ctx.lineTo(width - 30, centerY); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(centerX, centerY, a * scale, b * scale, 0, 0, 2 * Math.PI); ctx.stroke();
+    Notebook.curve(canvas,[[30,centerY],[width-30,centerY]],colors.line,.5);
+    ctx.setLineDash([5,6]); path(ctx,120,p=>[centerX+a*scale*Math.cos(p*2*Math.PI),centerY+b*scale*Math.sin(p*2*Math.PI)],colors.draft,1); ctx.setLineDash([]);
     const fraction = time % orbitSolution.period;
-    path(ctx, 240, (p) => point(fraction - (1 - p) * orbitSolution.period * .22), colors.accent, 2.5, .85);
+    path(ctx, 240, (p) => point(fraction - (1 - p) * orbitSolution.period * .22), colors.ink, 2.5);
     const state = orbitSolution.at(time), x = mapX(state.x), y = mapY(state.y);
     ctx.fillStyle = colors.accent; ctx.globalAlpha = .07; ctx.beginPath(); ctx.moveTo(mapX(0), centerY);
     for (let i = 0; i <= 80; i++) ctx.lineTo(...point(fraction - (1 - i / 80) * orbitSolution.period * .1));
     ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
-    ctx.strokeStyle = colors.line; ctx.beginPath(); ctx.moveTo(mapX(0), centerY); ctx.lineTo(x, y); ctx.stroke();
+    Notebook.curve(canvas,[[mapX(0),centerY],[x,y]],colors.draft,.6);
     dot(ctx, mapX(0), centerY, colors.yellow, 9);
     dot(ctx, x, y, colors.coral, 5.5);
     if (current().view === "velocity") {
@@ -160,7 +165,7 @@
       ctx.strokeStyle = colors.coral; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(endX, endY);
       ctx.moveTo(endX - Math.cos(angle - .45) * 7, endY - Math.sin(angle - .45) * 7); ctx.lineTo(endX, endY); ctx.lineTo(endX - Math.cos(angle + .45) * 7, endY - Math.sin(angle + .45) * 7); ctx.stroke();
     }
-    ctx.fillStyle = colors.muted; ctx.font = "10px monospace";
+    ctx.fillStyle = colors.muted; ctx.font = "12px monospace";
     ctx.fillText(`T = ${orbitSolution.period.toFixed(2)}`, 24, 22);
     ctx.fillText(`h = ${state.angularMomentum.toFixed(3)}`, 24, height - 16);
     telemetry([time, state.r, state.v, state.energy]);
@@ -178,4 +183,6 @@
   });
   $("#lab-play").addEventListener("click", () => { if (model === "oscillator" && time >= 20) reset(); clock.toggle(); });
   $("#lab-reset").addEventListener("click", reset);
+  document.addEventListener("toolsready", () => clock.redraw());
+  document.fonts?.ready.then(() => clock.redraw());
 })();

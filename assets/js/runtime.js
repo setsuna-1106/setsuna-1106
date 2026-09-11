@@ -5,7 +5,7 @@ window.Site = (() => {
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
   function palette() {
     const css = getComputedStyle(document.documentElement);
-    return Object.fromEntries(["bg", "surface", "line", "ink", "muted", "accent", "coral", "yellow"].map((key) => [key, css.getPropertyValue(`--${key}`).trim()]));
+    return Object.fromEntries(["bg", "surface", "line", "ink", "muted", "accent", "coral", "yellow", "draft"].map((key) => [key, css.getPropertyValue(`--${key}`).trim()]));
   }
   function icon(button, name, label) {
     button.innerHTML = `<i data-lucide="${name}"></i>`;
@@ -29,6 +29,8 @@ window.Site = (() => {
     let running = !motion.matches, visible = true, request = 0, last = null;
     function frame(now) {
       request = 0;
+      // Rough strokes need fewer frames than the former WebGL scene.
+      if (last !== null && now - last < 1000 / 30) { schedule(); return; }
       const delta = last === null ? 0 : Math.min((now - last) / 1000, .05);
       last = now; draw(delta); schedule();
     }
@@ -37,7 +39,7 @@ window.Site = (() => {
       if (active && !request) request = requestAnimationFrame(frame);
       if (!active) { cancelAnimationFrame(request); request = 0; last = null; }
     }
-    function setRunning(value) { running = value; onState(value); schedule(); }
+    function setRunning(value) { running = value && !motion.matches; onState(running); schedule(); }
     if ("IntersectionObserver" in window) new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; schedule(); }).observe(element);
     document.addEventListener("visibilitychange", schedule);
     motion.addEventListener("change", () => setRunning(!motion.matches));
