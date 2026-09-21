@@ -154,6 +154,8 @@ h1, h2, h3 { font-weight: 500; line-height: 1.35; font-family: var(--hand); }
 .site-header nav { display: flex; gap: 36px; margin-left: auto; margin-right: 40px; }
 .site-header nav a { position: relative; color: var(--muted); font: 15px var(--hand); }
 .site-header nav a:hover, .site-header nav a.is-current { color: var(--accent); }
+.site-header nav a.nav-project-link { color: var(--coral); }
+.site-header nav a.nav-project-link span { font-size: .8em; }
 .site-header nav a.is-current::after { content: ""; position: absolute; width: 34px; height: 7px; left: 50%; bottom: -10px; border-bottom: 2px solid var(--coral); border-radius: 50%; transform: translateX(-50%) rotate(-2deg); }
 .header-actions { display: flex; gap: 12px; }
 .icon-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: 38px; height: 38px; padding: 8px; border: 1px solid transparent; background: transparent; flex-shrink: 0; }
