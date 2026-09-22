@@ -27,6 +27,8 @@ window.Notebook = (() => {
   }
   // A small, deterministic subset of writing receives irregular spacing/baselines.
   function handwriting(element) {
+    if (!element || element.dataset.handwriting === 'true') return;
+    element.dataset.handwriting = 'true';
     const originalText = element.textContent;
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
     const nodes = []; while(walker.nextNode()) nodes.push(walker.currentNode);
@@ -36,7 +38,10 @@ window.Notebook = (() => {
       for (const char of node.textContent) {
         const span=document.createElement('span'); span.className='written-char'; span.textContent=char; span.setAttribute('aria-hidden','true');
         span.style.setProperty('--char-delay', `${Math.min(count * 34 + (count%5)*17, 600)}ms`);
-        if(count%13===4) { span.classList.add('imperfect-char'); span.style.setProperty('--tilt', `${count%2 ? -1.2 : 1.1}deg`); }
+        span.style.setProperty('--lift', `${(((count * 17) % 7) - 3) * .006}em`);
+        span.style.setProperty('--tilt', `${(((count * 11) % 9) - 4) * .22}deg`);
+        span.style.setProperty('--char-space', `${(((count * 19) % 5) - 2) * .012}em`);
+        if(count%13===4) span.classList.add('imperfect-char');
         fragment.append(span); count++;
       }
       node.replaceWith(fragment);
@@ -52,10 +57,14 @@ window.Notebook = (() => {
     element.classList.remove('turning'); void element.offsetWidth; element.classList.add('turning');
     element.addEventListener('animationend', () => element.classList.remove('turning'), {once:true});
   }
-  document.querySelectorAll('h1, .margin-note, .signature').forEach(el => { handwriting(el); write(el); });
+  document.querySelectorAll('h1, .margin-note, .signature, .hero-subtitle, .section-heading h2, .contact-line h2, .project-card h3 a, .project-subtitle, .note-equation, .note-remark').forEach(el => { handwriting(el); });
+  document.querySelectorAll('h1, .margin-note, .signature').forEach(el => write(el));
+  document.addEventListener('projectsrendered', () => {
+    document.querySelectorAll('.project-card h3 a, .project-subtitle').forEach(handwriting);
+  });
   // Delay the small drawing library until first paint. Text remains usable without it.
   requestAnimationFrame(() => ready().catch(() => {}));
-  return { ready, options, curve, write, turn };
+  return { ready, options, curve, handwriting, write, turn };
 })();
 
 (() => {
@@ -71,6 +80,8 @@ window.Notebook = (() => {
     const remark=document.createElement('p'); remark.className='note-remark'; remark.textContent=remarks[i];
     const original=document.createElement('span'); original.className='original-hint'; original.textContent='点击图示，查看原始笔记 ↗';
     caption.append(formula,remark,original);
+    Notebook.handwriting(formula);
+    Notebook.handwriting(remark);
   });
   function show(index) {
     page=Math.max(0,Math.min(notes.length-1,index));

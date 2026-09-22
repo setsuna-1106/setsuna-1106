@@ -19,3 +19,80 @@ h1,h2,h3,p { margin-top:0; } h1 { margin-bottom:25px; font:clamp(74px,11vw,140px
 @media (max-width:800px) { .hero { grid-template-columns:1fr; gap:44px; padding-top:67px; } .hero-diagram { min-height:375px; } .hero-diagram svg { min-height:375px; } .signal-grid { grid-template-columns:repeat(2,1fr); } .feature-card,.columns-section,.candidate-layout { grid-template-columns:1fr; gap:0; } .metric-panel { border-left:0; border-top:1px solid var(--line); } .columns-section { gap:70px; } .candidate-layout { gap:35px; } }
 @media (max-width:560px) { .wrap,.topbar { width:calc(100% - 30px); } .topbar { height:65px; } .issue-stamp { display:none; } .hero { min-height:0; padding-block:55px 60px; } h1 { font-size:77px; } .hero-lead { font-size:31px; } .hero-text { font-size:15px; } .hero-actions,.closing-actions { flex-wrap:wrap; gap:17px; } .hero-diagram,.hero-diagram svg { min-height:300px; } .hero-diagram text { font-size:11px; } .hero-diagram .formula { font-size:16px; } .signal-grid { gap:8px; font-size:14px; } .section { padding-block:72px; } .section-head { align-items:start; flex-direction:column; } .date-mark { text-align:left; } .feature-main { padding:27px 22px 30px; } .feature-main h3 { font-size:27px; } .metric-panel { padding:28px 22px; } .claim { font-size:23px; } .columns-section { gap:56px; } .candidate-card { padding:26px 22px; } .candidate-card h3 { font-size:27px; } .candidate-footer { flex-direction:column; gap:5px; } .footer { flex-direction:column; gap:9px; } }
 @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { transition:none!important; animation:none!important; } }
+
+/* Keep the research notebook on the same physical page as the portfolio. */
+body::before {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  opacity: .62;
+  background:
+    radial-gradient(circle at 14% 23%, rgba(102,80,47,.06) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 71% 68%, rgba(102,80,47,.05) 0 1px, transparent 1.5px),
+    repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, var(--blue) 8%, transparent) 32px);
+  background-size: 131px 157px, 173px 191px, auto;
+  mix-blend-mode: multiply;
+}
+
+.paper-noise { z-index: 0; }
+body > *:not(.paper-noise) { position: relative; z-index: 1; }
+
+.paper-noise {
+  opacity: .4;
+  background:
+    radial-gradient(ellipse at 18% 8%, rgba(255,255,255,.55), transparent 35%),
+    radial-gradient(ellipse at 86% 78%, rgba(170,145,102,.08), transparent 38%),
+    repeating-linear-gradient(93deg, transparent 0 127px, rgba(102,80,47,.035) 128px, transparent 129px);
+  mix-blend-mode: multiply;
+}
+
+.hero-diagram,
+.feature-card,
+.candidate-card {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 3px 5px 0 var(--shadow), 0 14px 28px color-mix(in srgb, var(--shadow) 72%, transparent);
+}
+
+.hero-diagram::after,
+.feature-card::after,
+.candidate-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .42;
+  background: repeating-linear-gradient(91deg, transparent 0 127px, rgba(102,80,47,.045) 128px, transparent 129px);
+  mix-blend-mode: multiply;
+}
+
+.hero-diagram > *,
+.feature-card > *,
+.candidate-card > * { position: relative; z-index: 1; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body::before,
+  :root:not([data-theme="light"]) .paper-noise { mix-blend-mode: screen; opacity: .3; }
+}
+
+:root[data-theme="dark"] body::before,
+:root[data-theme="dark"] .paper-noise { mix-blend-mode: screen; opacity: .3; }
+
+/* Human placement: the research sheet is aligned by eye, with small stable offsets. */
+.signal-grid > span:nth-child(2) { transform: rotate(-.45deg) translateY(1px); }
+.signal-grid > span:nth-child(3) { transform: rotate(.35deg) translateY(-1px); }
+.topic-list a:nth-child(2) { transform: translateX(2px) rotate(.18deg); }
+.topic-list a:nth-child(4) { transform: translateX(-1px) rotate(-.24deg); }
+.timeline li:nth-child(2) { transform: translateX(2px); }
+.timeline li:nth-child(4) { transform: translateX(-2px) rotate(.18deg); }
+.feature-meta span:nth-child(2) { letter-spacing: .015em; }
+.feature-meta span:nth-child(3) { transform: rotate(-.35deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-grid > span,
+  .topic-list a,
+  .timeline li,
+  .feature-meta span { transform: none; }
+}
