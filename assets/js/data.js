@@ -1,7 +1,8 @@
-// Curated from the public repository READMEs and GitHub API on 2026-09-05.
+// Curated from the public repository READMEs and GitHub profile on 2026-09-22.
 window.portfolioData = {
-  snapshotDate: "2026-09-05",
+  snapshotDate: "2026-09-22",
   projects: [
+    { name: "ai4physics", title: "AI×Physics", subtitle: "每周精读一篇交叉论文", category: "physics", icon: "sparkles", description: "把 AI 与物理交叉论文读成可以复核的记录：追踪物理直觉、证据边界、局限与还没弄懂的问题。", tags: ["AI", "Physics", "Research notes"], language: "Python" },
     { name: "c4phy", title: "c4phy", subtitle: "计算物理的开放实验记录", category: "physics", icon: "orbit", description: "用 C / C++ 做数值计算，用 Python、Raylib 与 SDL2 观察结果。从随机行走、双摆到傅里叶分析，最近开始探索盒中核子的束缚态。", tags: ["C / C++", "Python", "Numerical simulation"], language: "C", featured: true },
     { name: "MCMCode", title: "MCMCode", subtitle: "从数据到模型的工具箱", category: "modeling", icon: "chart-no-axes-combined", description: "为数学建模竞赛积累的可运行模板。覆盖回归、分类、优化、预测、图论、统计检验与论文绘图，配套原理和使用文档。", tags: ["scikit-learn", "SciPy", "OR-Tools"], language: "Python" },
     { name: "slog", title: "slog", subtitle: "让今天接得上昨天", category: "tools", icon: "terminal", description: "极简 Markdown 学习日志 CLI。自动带入未懂问题与待办，支持检索、统计、终端浏览和本地 Git 快照。单文件，零第三方依赖。", tags: ["CLI", "Markdown", "Zero dependencies"], language: "Python" },
@@ -11,12 +12,13 @@ window.portfolioData = {
     { name: "setsuna-1106", title: "Personal Website", subtitle: "我的个人网站", category: "tools", icon: "panels-top-left", description: "个人 GitHub Profile 与作品集。集中整理公开项目、计算物理笔记和实验记录，保留每一次构建的轨迹。", tags: ["HTML", "CSS", "JavaScript"], language: "CSS" }
   ],
   repositories: [
-    { name: "c4phy", language: "C", stars: 2, pushed_at: "2026-09-05T03:41:46Z" },
-    { name: "MCMCode", language: "Python", stars: 1, pushed_at: "2026-09-03T15:05:49Z" },
-    { name: "setsuna-1106", language: "CSS", stars: 0, pushed_at: "2026-09-02T15:09:34Z" },
-    { name: "slog", language: "Python", stars: 0, pushed_at: "2026-08-29T13:28:12Z" },
-    { name: "cpp_learn", language: "C++", stars: 0, pushed_at: "2026-08-03T14:24:07Z" },
-    { name: "chinese-to-english-textbook", language: "TeX", stars: 0, pushed_at: "2026-05-01T04:24:47Z" },
-    { name: "obsidian-pdf-reading-progress", language: "TypeScript", stars: 1, pushed_at: "2026-04-27T07:47:13Z" }
+    { name: "ai4physics", language: "Python", stars: 0, pushed_at: "2026-09-21" },
+    { name: "setsuna-1106", language: "CSS", stars: 0, pushed_at: "2026-09-21" },
+    { name: "c4phy", language: "C", stars: 2, pushed_at: "2026-09-10" },
+    { name: "MCMCode", language: "Python", stars: 1, pushed_at: "2026-09-03" },
+    { name: "slog", language: "Python", stars: 0, pushed_at: "2026-08-29" },
+    { name: "cpp_learn", language: "C++", stars: 0, pushed_at: "2026-08-03" },
+    { name: "chinese-to-english-textbook", language: "TeX", stars: 0, pushed_at: "2026-05-01" },
+    { name: "obsidian-pdf-reading-progress", language: "TypeScript", stars: 1, pushed_at: "2026-04-27" }
   ]
 };
