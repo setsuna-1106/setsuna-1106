@@ -104,6 +104,7 @@ window.Notebook = (() => {
   }
   function sketch(container, kind) {
     const colors=palette();
+    container.classList.remove('sketch-ready');
     let svg=container.querySelector('.notebook-sketch');
     if (!svg) { svg=document.createElementNS(NS,'svg'); svg.classList.add('notebook-sketch'); svg.setAttribute('viewBox','0 0 500 290'); svg.setAttribute('aria-hidden','true'); container.append(svg); }
     svg.replaceChildren();
@@ -137,6 +138,7 @@ window.Notebook = (() => {
     }
     container.classList.add('has-sketch');
     svg.querySelectorAll('path').forEach((path,i)=>{ const length=path.getTotalLength(); path.style.setProperty('--path-length',length); path.style.setProperty('--path-delay',`${Math.min(i*24,180)}ms`); });
+    container.classList.add('sketch-ready');
   }
   function drawSketches() {
     if(!window.rough) return;

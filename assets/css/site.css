@@ -597,7 +597,8 @@ h1, h2, h3, .margin-note, .equation, .signature { filter: var(--grain-filter); }
 .note-item .note-remark { color: var(--coral); font: 19px/1.7 var(--sans); margin-top: 15px; }
 .original-hint { color: var(--accent); display: block; font-size: 15px; margin-top: 22px; }
 .has-sketch { position: relative; }
-.has-sketch > img { visibility: hidden; }
+.has-sketch > img { visibility: visible; }
+.sketch-ready > img { visibility: hidden; }
 .notebook-sketch { width: 100%; height: auto; position: absolute; inset: 0; margin: auto; filter: var(--grain-filter); overflow: visible; pointer-events: none; font-family: var(--hand); }
 .project-art .notebook-sketch { width: calc(100% - 30px); bottom: 35px; }
 .notebook-sketch path { stroke-linecap: round; stroke-linejoin: round; }
