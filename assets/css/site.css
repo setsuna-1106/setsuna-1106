@@ -600,6 +600,8 @@ h1, h2, h3, .margin-note, .equation, .signature { filter: var(--grain-filter); }
 .has-sketch > img { visibility: visible !important; }
 .sketch-ready > img { visibility: hidden !important; }
 .notebook-sketch { width: 100%; height: auto; position: absolute; inset: 0; margin: auto; filter: none; overflow: visible; pointer-events: none; font-family: var(--hand); }
+.note-image > .notebook-sketch,
+.project-art > .notebook-sketch { position: absolute; inset: 0; z-index: 2; }
 .project-art .notebook-sketch { width: calc(100% - 30px); bottom: 35px; }
 .notebook-sketch path { stroke-linecap: round; stroke-linejoin: round; }
 .turning { transform-origin: left center; animation: var(--page-motion) var(--write-duration) ease-out both; }
