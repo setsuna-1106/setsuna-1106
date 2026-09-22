@@ -600,7 +600,7 @@ h1, h2, h3, .margin-note, .equation, .signature { filter: var(--grain-filter); }
 .has-sketch > img,
 .sketch-ready > img { visibility: visible !important; }
 .notebook-sketch { width: 100%; height: auto; position: absolute; inset: 0; margin: auto; filter: var(--grain-filter); overflow: visible; pointer-events: none; font-family: var(--hand); }
-.paged .notebook-sketch { display: none; }
+.paged .notebook-sketch { opacity: .24; }
 .project-art .notebook-sketch { width: calc(100% - 30px); bottom: 35px; }
 .notebook-sketch path { stroke-linecap: round; stroke-linejoin: round; }
 .turning { transform-origin: left center; animation: var(--page-motion) var(--write-duration) ease-out both; }
