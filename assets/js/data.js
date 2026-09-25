@@ -2,8 +2,8 @@
 window.portfolioData = {
   snapshotDate: "2026-09-22",
   projects: [
-    { name: "ai4physics", title: "AI×Physics", subtitle: "每周精读一篇交叉论文", category: "physics", icon: "sparkles", description: "把 AI 与物理交叉论文读成可以复核的记录：追踪物理直觉、证据边界、局限与还没弄懂的问题。", tags: ["AI", "Physics", "Research notes"], language: "Python" },
     { name: "c4phy", title: "c4phy", subtitle: "计算物理的开放实验记录", category: "physics", icon: "orbit", description: "用 C / C++ 做数值计算，用 Python、Raylib 与 SDL2 观察结果。从随机行走、双摆到傅里叶分析，最近开始探索盒中核子的束缚态。", tags: ["C / C++", "Python", "Numerical simulation"], language: "C", featured: true },
+    { name: "ai4physics", title: "AI×Physics", subtitle: "每周精读一篇交叉论文", category: "physics", icon: "sparkles", description: "把 AI 与物理交叉论文读成可以复核的记录：追踪物理直觉、证据边界、局限与还没弄懂的问题。", tags: ["AI", "Physics", "Research notes"], language: "Python" },
     { name: "MCMCode", title: "MCMCode", subtitle: "从数据到模型的工具箱", category: "modeling", icon: "chart-no-axes-combined", description: "为数学建模竞赛积累的可运行模板。覆盖回归、分类、优化、预测、图论、统计检验与论文绘图，配套原理和使用文档。", tags: ["scikit-learn", "SciPy", "OR-Tools"], language: "Python" },
     { name: "slog", title: "slog", subtitle: "让今天接得上昨天", category: "tools", icon: "terminal", description: "极简 Markdown 学习日志 CLI。自动带入未懂问题与待办，支持检索、统计、终端浏览和本地 Git 快照。单文件，零第三方依赖。", tags: ["CLI", "Markdown", "Zero dependencies"], language: "Python" },
     { name: "obsidian-pdf-reading-progress", title: "PDF Reading Progress", subtitle: "让阅读留下进度", category: "tools", icon: "book-open", description: "Obsidian 的 PDF 阅读进度插件。在文件列表与状态栏记录当前页数，集中查看阅读列表，也能标记一本书已经读完。", tags: ["Obsidian", "Plugin", "Reading"], language: "TypeScript" },

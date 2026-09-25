@@ -57,10 +57,10 @@ window.Notebook = (() => {
     element.classList.remove('turning'); void element.offsetWidth; element.classList.add('turning');
     element.addEventListener('animationend', () => element.classList.remove('turning'), {once:true});
   }
-  document.querySelectorAll('h1, .margin-note, .signature, .hero-subtitle, .section-heading h2, .contact-line h2, .project-card h3 a, .project-subtitle, .note-equation, .note-remark').forEach(el => { handwriting(el); });
+  document.querySelectorAll('h1, .margin-note, .signature, .hero-subtitle, .section-heading h2, .contact-line h2, .entry-title, .entry-subtitle, .note-equation, .note-remark').forEach(el => { handwriting(el); });
   document.querySelectorAll('h1, .margin-note, .signature').forEach(el => write(el));
   document.addEventListener('projectsrendered', () => {
-    document.querySelectorAll('.project-card h3 a, .project-subtitle').forEach(handwriting);
+    document.querySelectorAll('.entry-title, .entry-subtitle').forEach(handwriting);
   });
   // Delay the small drawing library until first paint. Text remains usable without it.
   requestAnimationFrame(() => ready().catch(() => {}));
@@ -143,7 +143,6 @@ window.Notebook = (() => {
   function drawSketches() {
     if(!window.rough) return;
     document.querySelectorAll('.note-image').forEach((container,i)=>sketch(container,i));
-    const featured=$('.project-art'); if(featured) sketch(featured,0);
   }
   // Offscreen diagrams wait until approaching the viewport; subsequent theme changes reuse resources.
   let activated=false;
@@ -155,7 +154,7 @@ window.Notebook = (() => {
   } else activate();
   document.addEventListener('themechange',()=>{if(activated)drawSketches();});
   document.addEventListener('projectsrendered',()=>{if(activated)drawSketches();Notebook.turn($('#project-grid'));});
-  document.querySelectorAll('#navigation a').forEach(link=>link.addEventListener('click',()=>Notebook.turn(document.querySelector(link.hash))));
+  document.querySelectorAll('#navigation a[href^="#"], .folio-index a[href^="#"]').forEach(link=>link.addEventListener('click',()=>Notebook.turn(document.querySelector(link.hash))));
   document.querySelectorAll('[data-model]').forEach(button=>button.addEventListener('click',()=>Notebook.turn($('#experiment-panel'))));
   document.addEventListener('themechange',()=>{
     if(Site.motion.matches) return;
