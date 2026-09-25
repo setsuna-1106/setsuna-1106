@@ -148,7 +148,7 @@ $("#close-dialog").addEventListener("click", () => dialog.close());
 dialog.addEventListener("close", () => document.body.classList.remove("dialog-open"));
 dialog.addEventListener("click", (event) => { if (event.target !== dialog) return; const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); });
 
-const navLinks = $$("#navigation a");
+const navLinks = $$("#navigation a[href^='#']");
 let navScheduled = false;
 function updateNav() {
   let current = "";
