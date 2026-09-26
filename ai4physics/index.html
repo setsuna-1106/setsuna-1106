@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4eee2">
-  <meta name="description" content="AI×Physics：每周精读一篇 AI 与物理交叉论文，写成可复现、诚实、面向物理本科生的中文解读。">
+  <meta name="description" content="AI×Physics：面向物理本科生的 AI 与物理交叉阅读记录。已发布 DU-NO 论文精读与 Jev 临时专题技术审查。">
   <title>AI×Physics | 告文的前沿深度解读</title>
   <link rel="icon" href="../assets/github-avatar.jpg">
   <link rel="preload" href="../assets/fonts/notebook-hand.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="ai4physics.css?v=2">
+  <link rel="stylesheet" href="ai4physics.css?v=3">
   <script>
     try { const t = localStorage.getItem('setsuna-theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (_) {}
   </script>
@@ -23,11 +23,11 @@
   <main>
     <section class="hero wrap" aria-labelledby="page-title">
       <div class="hero-copy">
-        <p class="eyebrow"><span class="red-dot"></span> 独立研究项目 · 每周一篇</p>
+        <p class="eyebrow"><span class="red-dot"></span> 独立阅读项目 · 已发布 2 期</p>
         <h1 id="page-title"><span>AI</span><b>×</b>Physics</h1>
-        <p class="hero-lead">把一篇论文读到<br><em>真的能讲清楚。</em></p>
-        <p class="hero-text">一份面向物理本科生的前沿阅读记录。每周从 AI 与物理的交叉地带挑一篇，追着问题、方法、证据和局限走一遍，留下可以复述、可以追问的中文解读。</p>
-        <div class="hero-actions"><a class="button button-dark" href="#latest">读本周解读 <span>↘</span></a><a class="under-link" href="https://github.com/setsuna-1106/ai4physics" target="_blank" rel="noreferrer">查看 GitHub ↗</a></div>
+        <p class="hero-lead">把前沿材料读到<br><em>能讲清证据边界。</em></p>
+        <p class="hero-text">一份面向物理本科生的前沿阅读记录。以 AI 与物理交叉论文为主，也记录值得单独审视的技术专题；沿着问题、方法、证据和局限，留下可以复述、可以追问的中文解读。</p>
+        <div class="hero-actions"><a class="button button-dark" href="#latest">读最新一期 <span>↘</span></a><a class="under-link" href="https://github.com/setsuna-1106/ai4physics" target="_blank" rel="noreferrer">查看 GitHub ↗</a></div>
       </div>
       <div class="hero-diagram" aria-label="频谱路径与局部卷积路径的手绘示意图" role="img">
         <div class="diagram-label label-top">GLOBAL VIEW</div><div class="diagram-label label-bottom">LOCAL DETAIL</div>
@@ -47,21 +47,36 @@
     <section class="signal-strip" aria-label="项目原则"><div class="wrap signal-grid"><span><strong>01</strong> 不只转述</span><span><strong>02</strong> 数字要有出处</span><span><strong>03</strong> 卡住就标出来</span><span><strong>04</strong> 每周 ≤ 4h</span></div></section>
 
     <section class="latest-section wrap section" id="latest" aria-labelledby="latest-title">
-      <div class="section-head"><div><p class="eyebrow">LATEST READING / #001</p><h2 id="latest-title">让神经算子<br><span>看见海浪的高频细节。</span></h2></div><span class="date-mark">2026.09.20<br><b>已发布</b></span></div>
+      <div class="section-head"><div><p class="eyebrow">LATEST ISSUE / #002 · 临时专题</p><h2 id="latest-title">概率决策接口，<br><span>价值与边界在哪里？</span></h2></div><span class="date-mark">2026.09.26<br><b>已发布</b></span></div>
       <article class="feature-card">
-        <div class="feature-main"><div class="feature-kicker">AI 求解物理 <span>·</span> DU-NO</div><h3>DU-NO: A Parameter-Efficient Double U-Shaped Neural Operator for Phase-Resolving Wave Modeling</h3><p class="feature-summary">用采样定理估计每一层的频谱缺口，只在最浅层补卷积分支：3.64M 参数，较 U-FNO 低 14.9% 的自由 rollout 误差。</p><div class="feature-meta"><span>arXiv:2609.12115</span><span>1500–3000 字深度解读</span><span>含局限与 [?] 卡点</span></div><a class="button button-red" href="https://github.com/setsuna-1106/ai4physics/blob/main/issues/001-DU-NO-%E6%B5%85%E5%B1%82%E9%A2%91%E8%B0%B1%E7%BC%BA%E5%8F%A3.md" target="_blank" rel="noreferrer">打开全文 <span>↗</span></a></div>
-        <aside class="metric-panel"><p class="metric-label">ONE-LINE CLAIM</p><p class="claim">“先估计各尺度的频谱缺口，再决定局部卷积容量放在哪里。”</p><div class="metric"><strong>3.64M</strong><span>参数量</span></div><div class="metric"><strong>173×</strong><span>相对 FUNWAVE-TVD 中位加速</span></div><div class="metric"><strong>42 步</strong><span>ρ &gt; 0.9 的长时 rollout</span></div></aside>
+        <div class="feature-main"><div class="feature-kicker">临时专题 <span>·</span> AI 基础设施</div><h3>Jev：概率决策接口的价值与边界</h3><p class="feature-summary">Jev 将文本状态映射为类型化的概率决策，供代码组合、校验和执行。本期对照厂商文档、官方评测与第三方实测，区分接口价值与尚未证实的能力主张。</p><div class="feature-meta"><span>TypeSafe AI 发布文 · 2026.09.15</span><span>产品技术审查，非论文精读</span><span>作者已通读放行；未复测 API</span></div><a class="button button-red" href="https://github.com/setsuna-1106/ai4physics/blob/main/issues/002-jev.md" target="_blank" rel="noreferrer">打开全文 <span>↗</span></a></div>
+        <aside class="metric-panel"><p class="metric-label">EVIDENCE BOUNDARY</p><p class="claim">“类型安全保证输出形式；判断是否正确，仍要用任务数据检验。”</p><div class="metric"><strong>3 种</strong><span>Choice / Score / Noul 问题类型</span></div><div class="metric"><strong>4 项</strong><span>官方工作流评测；衡量与参考模型的一致性</span></div><div class="metric"><strong>未公开</strong><span>完整训练配方与模型权重</span></div></aside>
       </article>
     </section>
 
     <section class="columns-section wrap section" aria-label="项目栏目与阅读方法">
-      <div class="column-block"><p class="eyebrow">FOUR DIRECTIONS</p><h2>四条路，<span>同一件事。</span></h2><p class="section-intro">不把 AI 当成黑箱，也不把物理当成装饰。每一篇都要回答：它借了哪种物理直觉？证据真的支持到哪里？</p><div class="topic-list"><a href="https://github.com/setsuna-1106/ai4physics/tree/main/issues" target="_blank" rel="noreferrer"><span class="topic-number">01</span><span><b>AI 求解物理</b><small>神经算子 · PINN · 模拟加速</small></span><i>↗</i></a><a href="https://github.com/setsuna-1106/ai4physics/tree/main/issues" target="_blank" rel="noreferrer"><span class="topic-number">02</span><span><b>AI 驱动发现</b><small>控制 · 符号回归 · 假设生成</small></span><i>↗</i></a><a href="https://github.com/setsuna-1106/ai4physics/tree/main/issues" target="_blank" rel="noreferrer"><span class="topic-number">03</span><span><b>物理理解 AI</b><small>统计力学 · 能量函数 · 相变</small></span><i>↗</i></a><a href="https://github.com/setsuna-1106/ai4physics/tree/main/issues" target="_blank" rel="noreferrer"><span class="topic-number">04</span><span><b>量子 × AI</b><small>纠错 · 变分算法 · 光子学</small></span><i>↗</i></a></div></div>
+      <div class="column-block"><p class="eyebrow">FOUR DIRECTIONS</p><h2>四条路，<span>同一件事。</span></h2><p class="section-intro">四个常规栏目追问 AI 与物理如何相互作用、证据支持到哪里。第 002 期是栏目之外的临时技术专题。</p><div class="topic-list"><a href="https://github.com/setsuna-1106/ai4physics/tree/main/issues" target="_blank" rel="noreferrer"><span class="topic-number">01</span><span><b>AI 求解物理</b><small>神经算子 · PINN · 模拟加速</small></span><i>↗</i></a><a href="https://github.com/setsuna-1106/ai4physics/tree/main/issues" target="_blank" rel="noreferrer"><span class="topic-number">02</span><span><b>AI 驱动发现</b><small>控制 · 符号回归 · 假设生成</small></span><i>↗</i></a><a href="https://github.com/setsuna-1106/ai4physics/tree/main/issues" target="_blank" rel="noreferrer"><span class="topic-number">03</span><span><b>物理理解 AI</b><small>统计力学 · 能量函数 · 相变</small></span><i>↗</i></a><a href="https://github.com/setsuna-1106/ai4physics/tree/main/issues" target="_blank" rel="noreferrer"><span class="topic-number">04</span><span><b>量子 × AI</b><small>纠错 · 变分算法 · 光子学</small></span><i>↗</i></a></div></div>
       <div class="column-block method-block"><p class="eyebrow">THE WEEKLY LOOP</p><h2>四小时内，<span>走完一圈。</span></h2><ol class="timeline"><li><span>周日</span><div><b>选题</b><p>从候选清单圈出本周唯一一篇。</p></div></li><li><span>周中</span><div><b>精读 × 2–3</b><p>沿六要素做笔记，保留自己的推导。</p></div></li><li><span>周六</span><div><b>成稿</b><p>把问题、方法、证据和局限写成一篇。</p></div></li><li><span>发布前</span><div><b>作者审查</b><p>通读、核数字、确认 [?]，再放行。</p></div></li></ol><p class="red-note">草稿永不 push。每一次发布都由作者本人放行。</p></div>
     </section>
 
-    <section class="candidate-section section" aria-labelledby="candidate-title"><div class="wrap candidate-layout"><div><p class="eyebrow">NEXT ON THE TABLE</p><h2 id="candidate-title">下一篇，<br><span>还在挑。</span></h2><p>公开候选清单，也公开“为什么选它”。研究不是只展示结论，选择过程同样值得留下。</p><a class="under-link" href="https://github.com/setsuna-1106/ai4physics/blob/main/candidates/2026-W38.md" target="_blank" rel="noreferrer">查看本周候选 ↗</a></div><div class="candidate-card"><div class="candidate-tag">★ 本周选题</div><h3>Physics-Informed Conformal Prediction</h3><p>把 PDE 一致性嵌进神经算子的分布无关不确定性估计。</p><div class="candidate-footer"><span>AI 求解物理</span><span>arXiv:2609.11935 ↗</span></div></div></div></section>
+    <section class="candidate-section section" aria-labelledby="candidate-title">
+      <div class="wrap candidate-layout">
+        <div>
+          <p class="eyebrow">PREVIOUS ISSUE / #001</p>
+          <h2 id="candidate-title">第一期，<br><span>仍可回看。</span></h2>
+          <p>DU-NO 是已发布的论文精读；当时的 W38 候选清单也保留着选题过程。第 002 期是临时专题，目前没有新的公开候选清单。</p>
+          <a class="under-link" href="https://github.com/setsuna-1106/ai4physics/blob/main/candidates/2026-W38.md" target="_blank" rel="noreferrer">回看 W38 候选 ↗</a>
+        </div>
+        <div class="candidate-card">
+          <div class="candidate-tag">#001 · AI 求解物理 · 2026.09.20</div>
+          <h3>DU-NO：让神经算子看见海浪的高频细节</h3>
+          <p>用采样定理估计不同尺度的频谱缺口，只在浅层增加局部卷积分支。论文报告 3.64M 参数、较 U-FNO 低 14.9% 的自由 rollout 误差；本文也标出了尚未亲自重算的部分。</p>
+          <div class="candidate-footer"><span>论文精读 · arXiv:2609.12115</span><a href="https://github.com/setsuna-1106/ai4physics/blob/main/issues/001-DU-NO-%E6%B5%85%E5%B1%82%E9%A2%91%E8%B0%B1%E7%BC%BA%E5%8F%A3.md" target="_blank" rel="noreferrer">阅读第 001 期 ↗</a></div>
+        </div>
+      </div>
+    </section>
 
-    <section class="closing-section wrap section"><div class="closing-rule"></div><p class="eyebrow">READ WITH ME</p><h2>一篇论文，<br><em>一次诚实的靠近。</em></h2><p>如果你也在学习 AI、物理，或者只是想知道一篇论文到底在说什么，欢迎从第一期开始。</p><div class="closing-actions"><a class="button button-dark" href="https://github.com/setsuna-1106/ai4physics" target="_blank" rel="noreferrer">去 GitHub 阅读 <span>↗</span></a><a class="under-link" href="../">回到个人主页 ↩</a></div></section>
+    <section class="closing-section wrap section"><div class="closing-rule"></div><p class="eyebrow">READ WITH ME</p><h2>一份材料，<br><em>一次诚实的靠近。</em></h2><p>如果你也在学习 AI、物理，或者想知道一项技术主张的证据在哪里，欢迎从已发布的两期开始。</p><div class="closing-actions"><a class="button button-dark" href="https://github.com/setsuna-1106/ai4physics" target="_blank" rel="noreferrer">去 GitHub 阅读 <span>↗</span></a><a class="under-link" href="../">回到个人主页 ↩</a></div></section>
   </main>
   <footer class="footer wrap"><span>AI×Physics / 告文 Setsuna</span><span>问题先于答案，证据紧跟其后。</span><a href="../">setsuna-1106.github.io ↗</a></footer>
   <script src="ai4physics.js?v=1"></script>

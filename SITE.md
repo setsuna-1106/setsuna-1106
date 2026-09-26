@@ -2,7 +2,7 @@
 
 直接打开 `index.html` 即可预览；将根目录文件与 `assets/` 一起部署到 GitHub Pages。
 
-- `assets/js/data.js`：项目介绍与公开仓库快照，依据 2026-09-22 的 GitHub 公开主页和各项目 README 整理；仓库活动也可在页面中刷新。
+- `assets/js/data.js`：项目介绍依据各仓库 README 整理；公开仓库活动快照于 2026-09-26 根据 GitHub 主页核对，也可在页面中刷新。
 - `assets/js/app.js`：分类筛选、主题、图片预览与仓库更新。
 - `assets/js/hero.js`、`assets/js/lab.js`、`assets/js/physics.js`：首屏波场、三个物理模型和数值计算。
 - `assets/css/site.css`：桌面与移动端布局，支持“稿纸 / 黑板”双载体、系统主题跟随、手写材质和减少动画偏好。
