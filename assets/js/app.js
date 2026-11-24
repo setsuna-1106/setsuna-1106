@@ -15,12 +15,16 @@ function buttonIcon(id, name, label) {
 }
 
 const categoryLabels = {
-  physics: ["计算物理", "PHYSICS / RESEARCH"],
-  modeling: ["数学建模", "MODELING / METHODS"],
-  tools: ["学习工具", "TOOLS / WORKFLOW"]
+  physics: ["物理与计算", "PHYSICS / COMPUTING"],
+  modeling: ["建模仿真", "MODELING / SIMULATION"],
+  tools: ["学习与科研工具", "TOOLS / WORKFLOW"]
 };
 // Each project receives a small, source-native diagram instead of a stock thumbnail.
 const projectDiagrams = {
+  "electrostatic-bvp": `<path class="diagram-guide" d="M73 53H427V264H73Z"/><path class="diagram-ink" d="M154 111H346M154 210H346"/><path class="diagram-accent" d="M185 111V210M228 111V210M272 111V210M315 111V210M154 111C92 130 92 191 154 210M346 111C408 130 408 191 346 210"/><text x="103" y="88">φ = 0</text><text x="224" y="151">∇²φ = 0</text>`,
+  sr: `<path class="diagram-guide" d="M89 116H411V248H89Z"/><path class="diagram-ink" d="M129 75H225L247 98V219H129Z M225 75V98H247 M154 127H222M154 149H222M154 171H205"/><path class="diagram-accent" d="M247 146H294M294 146V107H348M294 146V193H348"/><circle class="diagram-dot" cx="348" cy="107" r="6"/><circle class="diagram-dot" cx="348" cy="193" r="6"/><text x="126" y="276">bibkey</text><text x="360" y="114">PDF</text><text x="360" y="199">notes</text>`,
+  "bedwars-arena": `<path class="diagram-guide" d="M250 72L390 159L250 246L110 159Z"/><path class="diagram-ink" d="M250 72V246M110 159H390"/><path class="diagram-accent" d="M250 128L281 159L250 190L219 159Z"/><circle class="diagram-dot" cx="250" cy="72" r="10"/><circle class="diagram-dot" cx="390" cy="159" r="10"/><circle class="diagram-dot" cx="250" cy="246" r="10"/><circle class="diagram-dot" cx="110" cy="159" r="10"/><text x="334" y="251">L2 / 2D</text>`,
+  "invis-attack-sim": `<path class="diagram-guide" d="M81 263V75M81 236H424"/><path class="diagram-ink" d="M98 236H144V204H191V169H238V112H285V134H332V180H379V204H424"/><path class="diagram-accent" d="M116 263v-12m19 12v-12m39 12v-12m24 12v-12m25 12v-12m15 12v-12m12 12v-12m21 12v-12m10 12v-12m31 12v-12m39 12v-12m40 12v-12"/><text x="395" y="285">t</text><text x="96" y="102">λ(t)</text>`,
   ai4physics: `<circle class="diagram-guide" cx="250" cy="160" r="104"/><circle class="diagram-guide" cx="250" cy="160" r="57"/><path class="diagram-ink" d="M96 235C147 207 164 96 241 121S350 246 408 83"/><path class="diagram-accent" d="M121 88L241 121L374 220M241 121L408 83"/><circle class="diagram-dot" cx="121" cy="88" r="6"/><circle class="diagram-dot" cx="241" cy="121" r="7"/><circle class="diagram-dot" cx="374" cy="220" r="6"/><text x="95" y="66">AI</text><text x="388" y="259">φ</text>`,
   c4phy: `<path class="diagram-guide" d="M62 256H448M85 277V45"/><path class="diagram-ink" d="M103 222L132 189L159 203L182 151L214 165L239 119L268 143L293 102L318 123L353 76L385 102L422 65"/><path class="diagram-accent" d="M103 222L422 65"/><circle class="diagram-dot" cx="103" cy="222" r="7"/><circle class="diagram-dot" cx="422" cy="65" r="9"/><text x="252" y="275">⟨r²⟩ ∝ N</text>`,
   MCMCode: `<path class="diagram-guide" d="M67 264H445M84 280V49M84 188H445M84 113H445"/><path class="diagram-ink" d="M94 244C143 240 169 222 205 189S265 102 315 112S371 169 430 54"/><path class="diagram-accent" d="M99 237L178 217L249 157L322 115L404 101"/><circle class="diagram-dot" cx="178" cy="217" r="6"/><circle class="diagram-dot" cx="249" cy="157" r="6"/><circle class="diagram-dot" cx="322" cy="115" r="6"/><text x="307" y="280">min f(x)</text>`,

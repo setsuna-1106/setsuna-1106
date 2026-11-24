@@ -27,12 +27,19 @@
   try {
     let {d,w}=await fixture();
     assert(d.fonts.check('18px "Notebook Hand"'),'local handwritten font loaded');
-    assert(d.querySelectorAll('.project-card').length===7,'seven projects render');
+    assert(d.querySelectorAll('.project-entry').length===w.portfolioData.projects.length,'all projects render');
+    assert(d.querySelector('#navigation a[href="#recent"]') && d.querySelector('#recent h2'),'recent work navigation');
+    assert(Number(d.querySelector('#repo-count').textContent)===w.portfolioData.repositories.length,'GitHub snapshot renders');
     assert(d.querySelectorAll('.note-item:not([hidden])').length===1,'one active notebook page');
     d.querySelector('#note-next').click();assert(d.querySelector('#note-page').textContent==='02 / 03','next notebook page');
     d.querySelector('#note-next').click();assert(d.querySelector('#note-next').disabled,'last-page boundary');
     d.querySelector('#note-prev').click();assert(d.querySelector('#note-page').textContent==='02 / 03','previous notebook page');
-    d.querySelector('[data-filter="physics"]').click();assert(d.querySelectorAll('.project-card').length===2,'project category filtering');
+    d.querySelector('[data-filter="physics"]').click();
+    assert(d.querySelector('[data-project="electrostatic-bvp"].project-entry') && !d.querySelector('[data-project="sr"].project-entry'),'physics project filtering');
+    d.querySelector('[data-filter="modeling"]').click();
+    assert(d.querySelector('[data-project="bedwars-arena"].project-entry') && !d.querySelector('[data-project="electrostatic-bvp"].project-entry'),'modeling project filtering');
+    d.querySelector('[data-filter="tools"]').click();
+    assert(d.querySelector('[data-project="sr"].project-entry') && !d.querySelector('[data-project="bedwars-arena"].project-entry'),'tools project filtering');
     for(const model of ['wave','orbit','oscillator']){d.querySelector('[data-model="'+model+'"]').click();assert(d.querySelector('#experiment-panel').getAttribute('aria-labelledby')==='tab-'+model,model+' model switch');}
     const resources=w.performance.getEntriesByType('resource').length;
     d.querySelector('#theme-toggle').click();assert(d.documentElement.dataset.theme==='dark','manual dark theme');
@@ -44,6 +51,11 @@
     assert(w.testErrors.length===0,'no runtime exceptions');
     ({d,w}=await fixture({dark:true,reduced:true,width:375}));
     assert(w.getComputedStyle(d.documentElement).getPropertyValue('--ink').trim()==='#f7f3e7','system dark CSS carrier');
+    const menuToggle=d.querySelector('#menu-toggle');
+    menuToggle.click();
+    const recentLink=d.querySelector('#navigation a[href="#recent"]'), recentRect=recentLink.getBoundingClientRect();
+    assert(recentLink.contains(d.elementFromPoint(recentRect.x+recentRect.width/2,recentRect.y+recentRect.height/2)),'mobile menu keeps the recent work link clickable');
+    menuToggle.click();
     assert(!d.documentElement.dataset.theme,'system default has no saved override');
     assert(d.querySelector('#theme-toggle').getAttribute('aria-pressed')==='true','system dark button state');
     d.querySelector('#theme-toggle').click();assert(d.documentElement.dataset.theme==='light','manual light overrides dark system');
